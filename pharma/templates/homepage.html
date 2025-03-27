@@ -1,0 +1,436 @@
+{% extends "base.html" %}
+
+{% block title %}
+Vivvo.ai - {% if session.get('language') == 'ja' %}AIによる医療従事者向けエンゲージメントエンジン{% else %}The AI HCP Engagement Engine{% endif %}
+{% endblock %}
+
+{% block extra_head %}
+<!-- Additional fonts for Palantir-inspired design -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+<style>
+  /* Additional styles for homepage only */
+    body {
+    overflow-x: hidden;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+  <div class="hero-overlay"></div>
+  
+  <img src="{% if session.get('theme') == 'light' %}{{ url_for('static', filename='img/pharma-poster-light.svg') }}{% else %}{{ url_for('static', filename='img/pharma-poster.svg') }}{% endif %}" 
+       alt="Background" class="position-absolute w-100 h-100" style="object-fit: cover; z-index: -1;">
+    
+    <div class="hero-content">
+        <div class="row">
+      <div class="col-lg-8">
+        <h1 class="hero-title">
+                    {% if session.get('language') == 'ja' %}
+            <span>AI</span>主導の医療従事者エンゲージメントを強化する製薬プラットフォーム
+                    {% else %}
+            The <span>AI-Powered</span> HCP Engagement Platform for Pharmaceutical Innovation
+                    {% endif %}
+                </h1>
+                
+        <p class="hero-subtitle">
+          {% if session.get('language') == 'ja' %}
+            Vivvo.aiは、AIを活用して医療従事者とのエンゲージメントを強化し、パーソナライズされた、コンプライアンスに準拠したマーケティングを展開します。
+          {% else %}
+            Vivvo.ai leverages artificial intelligence to enhance HCP engagement with personalized, compliant marketing across every touchpoint.
+          {% endif %}
+        </p>
+        
+        <div class="mt-4">
+          <a href="{{ url_for('login') }}" class="btn btn-primary">
+                        {% if session.get('language') == 'ja' %}
+                            始めましょう
+                        {% else %}
+                            Get Started
+                        {% endif %}
+                    </a>
+          
+          <a href="{{ url_for('about') }}" class="btn btn-outline-primary ms-3">
+            {% if session.get('language') == 'ja' %}
+              詳細を見る
+            {% else %}
+              Learn More
+            {% endif %}
+          </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section py-5">
+  <div class="container">
+    <h2 class="section-title">
+      {% if session.get('language') == 'ja' %}
+        プラットフォームの特徴
+      {% else %}
+        Our Platform Features
+      {% endif %}
+    </h2>
+    
+    <div class="row g-4">
+      <!-- MediTag -->
+      <div class="col-md-6 col-lg-3">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-tag"></i>
+          </div>
+          <h3 class="feature-title">MediTag Engine</h3>
+          <p class="feature-description">
+            {% if session.get('language') == 'ja' %}
+              処方パターンと反応性に基づいて医療従事者を分類します。
+            {% else %}
+              Segment healthcare providers based on prescribing patterns and responsiveness.
+            {% endif %}
+          </p>
+          <a href="{{ url_for('login') }}" class="btn btn-sm btn-outline-primary mt-3">
+                            {% if session.get('language') == 'ja' %}
+              詳細を見る
+                            {% else %}
+              Explore
+                            {% endif %}
+          </a>
+                </div>
+            </div>
+            
+            <!-- ContentCraft -->
+      <div class="col-md-6 col-lg-3">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-pen-fancy"></i>
+          </div>
+          <h3 class="feature-title">ContentCraft AI</h3>
+          <p class="feature-description">
+            {% if session.get('language') == 'ja' %}
+              MLR事前審査を備えたパーソナライズされたコンテンツ生成。
+            {% else %}
+              Generate personalized content with built-in MLR pre-screening compliance.
+            {% endif %}
+          </p>
+          <a href="{{ url_for('login') }}" class="btn btn-sm btn-outline-primary mt-3">
+                            {% if session.get('language') == 'ja' %}
+              詳細を見る
+                            {% else %}
+              Explore
+                            {% endif %}
+          </a>
+                </div>
+            </div>
+            
+            <!-- EngageOptic -->
+      <div class="col-md-6 col-lg-3">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-chart-line"></i>
+          </div>
+          <h3 class="feature-title">EngageOptic</h3>
+          <p class="feature-description">
+            {% if session.get('language') == 'ja' %}
+              各医療従事者のためのチャネルとタイミングの最適化。
+            {% else %}
+              Optimize channels and timing for each healthcare provider segment.
+            {% endif %}
+          </p>
+          <a href="{{ url_for('login') }}" class="btn btn-sm btn-outline-primary mt-3">
+                            {% if session.get('language') == 'ja' %}
+              詳細を見る
+                            {% else %}
+              Explore
+                            {% endif %}
+          </a>
+                </div>
+            </div>
+            
+            <!-- InsightLens -->
+      <div class="col-md-6 col-lg-3">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-chart-pie"></i>
+          </div>
+          <h3 class="feature-title">InsightLens</h3>
+          <p class="feature-description">
+            {% if session.get('language') == 'ja' %}
+              詳細な指標でキャンペーンパフォーマンスを分析します。
+            {% else %}
+              Analyze campaign performance and compliance with detailed metrics.
+            {% endif %}
+          </p>
+          <a href="{{ url_for('login') }}" class="btn btn-sm btn-outline-primary mt-3">
+                            {% if session.get('language') == 'ja' %}
+              詳細を見る
+                            {% else %}
+              Explore
+                            {% endif %}
+          </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Platform Section -->
+<section class="platform-section">
+  <div class="container">
+    <div class="platform-item">
+      <div class="row align-items-center">
+        <div class="col-md-6">
+          <div class="platform-number">/01</div>
+          <h3 class="platform-title">MediTag Engine</h3>
+          <p class="platform-description">
+            {% if session.get('language') == 'ja' %}
+              MediTagエンジンは先進的な機械学習を活用して処方データを分析し、医療従事者をセグメント化します。これにより、パーソナライズされたアプローチが可能になります。
+            {% else %}
+              Our MediTag Engine uses advanced machine learning to analyze prescribing data and segment healthcare providers, enabling a personalized approach to each physician based on their unique characteristics.
+            {% endif %}
+          </p>
+          <a href="{{ url_for('login') }}" class="btn btn-outline-primary mt-3">
+            {% if session.get('language') == 'ja' %}
+              始めましょう
+            {% else %}
+              Start Tagging
+            {% endif %}
+          </a>
+        </div>
+        <div class="col-md-6">
+          <svg width="100%" height="300" viewBox="0 0 600 300" xmlns="http://www.w3.org/2000/svg">
+            <!-- Tag visualization SVG -->
+            <g id="tags" fill="none" stroke-width="2">
+              <!-- Tag clusters with opacity dependent on theme -->
+              <g transform="translate(150, 150)" stroke="{% if session.get('theme') == 'light' %}#0070dd{% else %}#3ccfcf{% endif %}" opacity="0.7">
+                <circle cx="0" cy="0" r="50" />
+                <text x="0" y="0" text-anchor="middle" fill="{% if session.get('theme') == 'light' %}#0070dd{% else %}#3ccfcf{% endif %}" font-size="12">Early Adopters</text>
+              </g>
+              <g transform="translate(300, 100)" stroke="{% if session.get('theme') == 'light' %}#0070dd{% else %}#3ccfcf{% endif %}" opacity="0.5">
+                <circle cx="0" cy="0" r="40" />
+                <text x="0" y="0" text-anchor="middle" fill="{% if session.get('theme') == 'light' %}#0070dd{% else %}#3ccfcf{% endif %}" font-size="12">Evidence Driven</text>
+              </g>
+              <g transform="translate(400, 200)" stroke="{% if session.get('theme') == 'light' %}#0070dd{% else %}#3ccfcf{% endif %}" opacity="0.6">
+                <circle cx="0" cy="0" r="45" />
+                <text x="0" y="0" text-anchor="middle" fill="{% if session.get('theme') == 'light' %}#0070dd{% else %}#3ccfcf{% endif %}" font-size="12">Patient Focused</text>
+              </g>
+              <g transform="translate(250, 220)" stroke="{% if session.get('theme') == 'light' %}#0070dd{% else %}#3ccfcf{% endif %}" opacity="0.4">
+                <circle cx="0" cy="0" r="30" />
+                <text x="0" y="0" text-anchor="middle" fill="{% if session.get('theme') == 'light' %}#0070dd{% else %}#3ccfcf{% endif %}" font-size="12">Balanced</text>
+              </g>
+            </g>
+          </svg>
+        </div>
+      </div>
+    </div>
+    
+    <div class="platform-item">
+      <div class="row align-items-center">
+        <div class="col-md-6 order-md-2">
+          <div class="platform-number">/02</div>
+          <h3 class="platform-title">ContentCraft AI</h3>
+          <p class="platform-description">
+            {% if session.get('language') == 'ja' %}
+              ContentCraft AIは各医療従事者向けにパーソナライズされたコンテンツを生成し、法務・医療・レギュラトリー（MLR）コンプライアンスを自動的に確保します。
+            {% else %}
+              ContentCraft AI generates personalized content for each HCP, automatically ensuring Medical, Legal, and Regulatory (MLR) compliance while maintaining engagement effectiveness.
+            {% endif %}
+          </p>
+          <a href="{{ url_for('login') }}" class="btn btn-outline-primary mt-3">
+            {% if session.get('language') == 'ja' %}
+              コンテンツを作成
+            {% else %}
+              Create Content
+            {% endif %}
+          </a>
+        </div>
+        <div class="col-md-6 order-md-1">
+          <svg width="100%" height="300" viewBox="0 0 600 300" xmlns="http://www.w3.org/2000/svg">
+            <!-- Content generation visualization SVG -->
+            <g id="document" fill="none">
+              <!-- Document outline -->
+              <rect x="150" y="50" width="300" height="200" rx="5" stroke="{% if session.get('theme') == 'light' %}#0070dd{% else %}#3ccfcf{% endif %}" stroke-width="2" />
+              
+              <!-- Document content lines -->
+              <line x1="180" y1="80" x2="420" y2="80" stroke="{% if session.get('theme') == 'light' %}#0070dd{% else %}#3ccfcf{% endif %}" stroke-width="2" opacity="0.7" />
+              <line x1="180" y1="110" x2="420" y2="110" stroke="{% if session.get('theme') == 'light' %}#0070dd{% else %}#3ccfcf{% endif %}" stroke-width="2" opacity="0.5" />
+              <line x1="180" y1="140" x2="420" y2="140" stroke="{% if session.get('theme') == 'light' %}#0070dd{% else %}#3ccfcf{% endif %}" stroke-width="2" opacity="0.6" />
+              <line x1="180" y1="170" x2="350" y2="170" stroke="{% if session.get('theme') == 'light' %}#0070dd{% else %}#3ccfcf{% endif %}" stroke-width="2" opacity="0.4" />
+              <line x1="180" y1="200" x2="300" y2="200" stroke="{% if session.get('theme') == 'light' %}#0070dd{% else %}#3ccfcf{% endif %}" stroke-width="2" opacity="0.5" />
+              
+              <!-- AI generation animation effect -->
+              <rect x="150" y="50" width="300" height="200" rx="5" fill="{% if session.get('theme') == 'light' %}#0070dd{% else %}#3ccfcf{% endif %}" opacity="0.1">
+                <animate attributeName="opacity" values="0.1;0.2;0.1" dur="3s" repeatCount="indefinite" />
+              </rect>
+            </g>
+                        </svg>
+        </div>
+      </div>
+                    </div>
+                    
+    <div class="platform-item">
+      <div class="row align-items-center">
+        <div class="col-md-6">
+          <div class="platform-number">/03</div>
+          <h3 class="platform-title">EngageOptic</h3>
+          <p class="platform-description">
+            {% if session.get('language') == 'ja' %}
+              EngageOpticは予測分析を活用して、各医療従事者向けに最適なエンゲージメントチャネルとタイミングを特定し、反応率を大幅に向上させます。
+            {% else %}
+              EngageOptic uses predictive analytics to identify the optimal engagement channels and timing for each HCP, significantly improving response rates and overall campaign performance.
+            {% endif %}
+          </p>
+          <a href="{{ url_for('login') }}" class="btn btn-outline-primary mt-3">
+            {% if session.get('language') == 'ja' %}
+              キャンペーンを最適化
+            {% else %}
+              Optimize Campaigns
+            {% endif %}
+          </a>
+        </div>
+        <div class="col-md-6">
+          <svg width="100%" height="300" viewBox="0 0 600 300" xmlns="http://www.w3.org/2000/svg">
+            <!-- Channel optimization visualization SVG -->
+            <g id="channels" fill="none">
+              <!-- Channel bars -->
+              <rect x="150" y="200" width="40" height="50" fill="{% if session.get('theme') == 'light' %}#0070dd{% else %}#3ccfcf{% endif %}" opacity="0.3" />
+              <rect x="220" y="150" width="40" height="100" fill="{% if session.get('theme') == 'light' %}#0070dd{% else %}#3ccfcf{% endif %}" opacity="0.6" />
+              <rect x="290" y="100" width="40" height="150" fill="{% if session.get('theme') == 'light' %}#0070dd{% else %}#3ccfcf{% endif %}" opacity="0.9" />
+              <rect x="360" y="170" width="40" height="80" fill="{% if session.get('theme') == 'light' %}#0070dd{% else %}#3ccfcf{% endif %}" opacity="0.5" />
+              <rect x="430" y="220" width="40" height="30" fill="{% if session.get('theme') == 'light' %}#0070dd{% else %}#3ccfcf{% endif %}" opacity="0.2" />
+              
+              <!-- Channel labels -->
+              <text x="170" y="260" text-anchor="middle" fill="{% if session.get('theme') == 'light' %}#0070dd{% else %}#3ccfcf{% endif %}" font-size="12">Email</text>
+              <text x="240" y="260" text-anchor="middle" fill="{% if session.get('theme') == 'light' %}#0070dd{% else %}#3ccfcf{% endif %}" font-size="12">Video</text>
+              <text x="310" y="260" text-anchor="middle" fill="{% if session.get('theme') == 'light' %}#0070dd{% else %}#3ccfcf{% endif %}" font-size="12">In-person</text>
+              <text x="380" y="260" text-anchor="middle" fill="{% if session.get('theme') == 'light' %}#0070dd{% else %}#3ccfcf{% endif %}" font-size="12">Webinar</text>
+              <text x="450" y="260" text-anchor="middle" fill="{% if session.get('theme') == 'light' %}#0070dd{% else %}#3ccfcf{% endif %}" font-size="12">Call</text>
+              
+              <!-- Axis -->
+              <line x1="130" y1="250" x2="500" y2="250" stroke="{% if session.get('theme') == 'light' %}#0070dd{% else %}#3ccfcf{% endif %}" stroke-width="2" opacity="0.5" />
+              <line x1="130" y1="50" x2="130" y2="250" stroke="{% if session.get('theme') == 'light' %}#0070dd{% else %}#3ccfcf{% endif %}" stroke-width="2" opacity="0.5" />
+              
+              <!-- Highlight pulse on best channel -->
+              <rect x="290" y="100" width="40" height="150" fill="{% if session.get('theme') == 'light' %}#0070dd{% else %}#3ccfcf{% endif %}" opacity="0.3">
+                <animate attributeName="opacity" values="0.3;0.6;0.3" dur="2s" repeatCount="indefinite" />
+              </rect>
+            </g>
+                        </svg>
+                </div>
+            </div>
+        </div>
+        
+    <div class="platform-item">
+      <div class="row align-items-center">
+        <div class="col-md-6 order-md-2">
+          <div class="platform-number">/04</div>
+          <h3 class="platform-title">InsightLens</h3>
+          <p class="platform-description">
+            {% if session.get('language') == 'ja' %}
+              InsightLensは詳細なキャンペーン分析と行動指向のインサイトを提供し、エンゲージメント戦略の継続的な改善を可能にします。
+            {% else %}
+              InsightLens provides detailed campaign analytics and actionable insights, enabling continuous improvement of engagement strategies and measuring compliance adherence.
+            {% endif %}
+        </p>
+          <a href="{{ url_for('login') }}" class="btn btn-outline-primary mt-3">
+                {% if session.get('language') == 'ja' %}
+              分析を見る
+                {% else %}
+              View Analytics
+                {% endif %}
+            </a>
+        </div>
+        <div class="col-md-6 order-md-1">
+          <svg width="100%" height="300" viewBox="0 0 600 300" xmlns="http://www.w3.org/2000/svg">
+            <!-- Analytics visualization SVG -->
+            <g id="analytics">
+              <!-- Line chart -->
+              <polyline points="150,200 200,180 250,120 300,150 350,100 400,80 450,60" 
+                     fill="none" stroke="{% if session.get('theme') == 'light' %}#0070dd{% else %}#3ccfcf{% endif %}" stroke-width="3" />
+              
+              <!-- Data points -->
+              <circle cx="150" cy="200" r="5" fill="{% if session.get('theme') == 'light' %}#0070dd{% else %}#3ccfcf{% endif %}" />
+              <circle cx="200" cy="180" r="5" fill="{% if session.get('theme') == 'light' %}#0070dd{% else %}#3ccfcf{% endif %}" />
+              <circle cx="250" cy="120" r="5" fill="{% if session.get('theme') == 'light' %}#0070dd{% else %}#3ccfcf{% endif %}" />
+              <circle cx="300" cy="150" r="5" fill="{% if session.get('theme') == 'light' %}#0070dd{% else %}#3ccfcf{% endif %}" />
+              <circle cx="350" cy="100" r="5" fill="{% if session.get('theme') == 'light' %}#0070dd{% else %}#3ccfcf{% endif %}" />
+              <circle cx="400" cy="80" r="5" fill="{% if session.get('theme') == 'light' %}#0070dd{% else %}#3ccfcf{% endif %}" />
+              <circle cx="450" cy="60" r="5" fill="{% if session.get('theme') == 'light' %}#0070dd{% else %}#3ccfcf{% endif %}" />
+              
+              <!-- Axis -->
+              <line x1="130" y1="250" x2="500" y2="250" stroke="{% if session.get('theme') == 'light' %}#0070dd{% else %}#3ccfcf{% endif %}" stroke-width="2" opacity="0.5" />
+              <line x1="130" y1="50" x2="130" y2="250" stroke="{% if session.get('theme') == 'light' %}#0070dd{% else %}#3ccfcf{% endif %}" stroke-width="2" opacity="0.5" />
+              
+              <!-- Highlight animation for trend -->
+              <circle cx="450" cy="60" r="8" fill="none" stroke="{% if session.get('theme') == 'light' %}#0070dd{% else %}#3ccfcf{% endif %}" stroke-width="2" opacity="0.5">
+                <animate attributeName="r" values="8;12;8" dur="2s" repeatCount="indefinite" />
+                <animate attributeName="opacity" values="0.5;0.8;0.5" dur="2s" repeatCount="indefinite" />
+              </circle>
+            </g>
+          </svg>
+        </div>
+      </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+  <div class="container">
+    <h2 class="cta-title">
+      {% if session.get('language') == 'ja' %}
+        今日から始めましょう
+      {% else %}
+        Get Started Today
+      {% endif %}
+    </h2>
+    
+    <p class="cta-subtitle">
+      {% if session.get('language') == 'ja' %}
+        Vivvo.aiで医療従事者とのエンゲージメントを変革し、医療コミュニケーションをより効果的かつコンプライアンスに準拠した形で行いましょう。
+      {% else %}
+        Transform your HCP engagement with Vivvo.ai and make healthcare communications more effective, personalized, and compliant.
+      {% endif %}
+    </p>
+    
+    <a href="{{ url_for('login') }}" class="btn btn-primary">
+      {% if session.get('language') == 'ja' %}
+        アカウントを作成
+      {% else %}
+        Create Account
+      {% endif %}
+    </a>
+  </div>
+</section>
+
+<script>
+  // Intersection Observer for animation effects
+  document.addEventListener('DOMContentLoaded', function() {
+    const observerOptions = {
+      root: null,
+      rootMargin: '0px',
+      threshold: 0.1
+    };
+    
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('animate__animated', 'animate__fadeInUp');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, observerOptions);
+    
+    // Observe all feature cards
+    document.querySelectorAll('.feature-card').forEach(card => {
+      observer.observe(card);
+    });
+    
+    // Observe platform items
+    document.querySelectorAll('.platform-item').forEach(item => {
+      observer.observe(item);
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="{{ session.get('language', 'en') }}" data-bs-theme="{{ session.get('theme', 'dark') }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>{% block title %}Vivvo.ai - {% if session.get('language') == 'ja' %}AIによる医療従事者向けエンゲージメントエンジン{% else %}The AI HCP Engagement Engine{% endif %}{% endblock %}</title>
+    
+    <!-- Bootstrap CSS -->
+    <link id="theme-stylesheet" href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- Chart.js for analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/animations.css') }}">
+    
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <!-- Navigation - Palantir Style -->
+    <nav class="navbar navbar-expand-lg fixed-top border-bottom" style="{% if session.get('theme') == 'light' %}background-color: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);{% else %}background-color: rgba(10, 14, 23, 0.95); backdrop-filter: blur(10px);{% endif %}">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand" href="{{ url_for('homepage') }}" style="{% if session.get('theme') == 'light' %}color: #0070dd;{% else %}color: #3ccfcf;{% endif %} font-family: 'Inter', sans-serif; font-weight: 700;">
+                <i class="fas fa-capsules me-2"></i>Vivvo.ai
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('homepage') }}" style="{% if session.get('theme') == 'light' %}color: #1a202c;{% else %}color: #e2e8f0;{% endif %} font-weight: 500;">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('about') }}" style="{% if session.get('theme') == 'light' %}color: #1a202c;{% else %}color: #e2e8f0;{% endif %} font-weight: 500;">About</a>
+                    </li>
+                    {% if current_user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('dashboard') }}" style="{% if session.get('theme') == 'light' %}color: #1a202c;{% else %}color: #e2e8f0;{% endif %} font-weight: 500;">Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('meditag') }}" style="{% if session.get('theme') == 'light' %}color: #1a202c;{% else %}color: #e2e8f0;{% endif %} font-weight: 500;">MediTag</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('contentcraft') }}" style="{% if session.get('theme') == 'light' %}color: #1a202c;{% else %}color: #e2e8f0;{% endif %} font-weight: 500;">ContentCraft</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('engageoptic') }}" style="{% if session.get('theme') == 'light' %}color: #1a202c;{% else %}color: #e2e8f0;{% endif %} font-weight: 500;">EngageOptic</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('insightlens') }}" style="{% if session.get('theme') == 'light' %}color: #1a202c;{% else %}color: #e2e8f0;{% endif %} font-weight: 500;">InsightLens</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('assets_dashboard') }}" style="{% if session.get('theme') == 'light' %}color: #1a202c;{% else %}color: #e2e8f0;{% endif %} font-weight: 500;">
+                                <i class="fas fa-images me-1"></i> Assets
+                            </a>
+                        </li>
+                        
+                        {% if current_user.is_admin() %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown" style="{% if session.get('theme') == 'light' %}color: #0070dd;{% else %}color: #3ccfcf;{% endif %}; font-weight: 600;">
+                                <i class="fas fa-cog"></i> Admin
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="{{ url_for('admin_dashboard') }}">Admin Dashboard</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('admin_user_management') }}">User Management</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('admin_api_connections') }}">API Connections</a></li>
+                            </ul>
+                        </li>
+                        {% elif current_user.is_manager() %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('manager_invite_user') }}" style="{% if session.get('theme') == 'light' %}color: #0070dd;{% else %}color: #3ccfcf;{% endif %}; font-weight: 600;">
+                                <i class="fas fa-user-plus"></i> Invite Agents
+                            </a>
+                        </li>
+                        {% endif %}
+                    {% endif %}
+                </ul>
+                <ul class="navbar-nav ms-auto">
+                    <!-- Theme Toggle -->
+                    <li class="nav-item">
+                        <div class="nav-link d-flex align-items-center">
+                            <i id="theme-icon" class="fas fa-{% if session.get('theme') == 'light' %}sun{% else %}moon{% endif %} me-2" style="color: {% if session.get('theme') == 'light' %}#0070dd{% else %}#3ccfcf{% endif %};"></i>
+                            <div class="form-check form-switch d-inline-block">
+                                <input class="form-check-input" type="checkbox" role="switch" id="themeSwitch" {% if session.get('theme') == 'light' %}checked{% endif %} style="background-color: {% if session.get('theme') == 'light' %}#0070dd{% else %}#3ccfcf{% endif %}; border-color: {% if session.get('theme') == 'light' %}#0070dd{% else %}#3ccfcf{% endif %};">
+                                <label class="form-check-label visually-hidden" for="themeSwitch">Toggle Theme</label>
+                            </div>
+                        </div>
+                    </li>
+                    
+                    <!-- Language Switcher -->
+                    <li class="nav-item">
+                        <div class="nav-link">
+                            <a href="{{ url_for('set_language', lang='en') }}" class="me-2 {% if session.get('language') != 'ja' %}fw-bold{% else %}text-muted{% endif %}" style="text-decoration: none; color: {% if session.get('language') != 'ja' %}{% if session.get('theme') == 'light' %}#0070dd{% else %}#3ccfcf{% endif %}{% endif %}">EN</a>
+                            <span class="text-muted">|</span>
+                            <a href="{{ url_for('set_language', lang='ja') }}" class="ms-2 {% if session.get('language') == 'ja' %}fw-bold{% else %}text-muted{% endif %}" style="text-decoration: none; color: {% if session.get('language') == 'ja' %}{% if session.get('theme') == 'light' %}#0070dd{% else %}#3ccfcf{% endif %}{% endif %}">JP</a>
+                        </div>
+                    </li>
+                    
+                    {% if current_user.is_authenticated %}
+                    <li class="nav-item">
+                        <span class="nav-link" style="{% if session.get('theme') == 'light' %}color: #1a202c;{% else %}color: #e2e8f0;{% endif %} font-weight: 500;">
+                            {% if session.get('language') == 'ja' %}
+                                ようこそ、{{ current_user.username }}さん
+                            {% else %}
+                                Welcome, {{ current_user.username }}
+                            {% endif %}
+                        </span>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('logout') }}" style="{% if session.get('theme') == 'light' %}color: #1a202c;{% else %}color: #e2e8f0;{% endif %} font-weight: 500;">
+                            {% if session.get('language') == 'ja' %}ログアウト{% else %}Logout{% endif %}
+                        </a>
+                    </li>
+                    {% else %}
+                    <li class="nav-item ms-3">
+                        <a class="btn btn-sm" href="{{ url_for('login') }}" style="{% if session.get('theme') == 'light' %}background-color: #0070dd; color: #fff;{% else %}background-color: #3ccfcf; color: #000;{% endif %} border-radius: 4px; padding: 5px 15px; font-weight: 500;">
+                            {% if session.get('language') == 'ja' %}ログイン{% else %}Login{% endif %}
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        {% block content %}{% endblock %}
+    </div>
+    
+    <!-- Footer - Palantir Style -->
+    <footer style="{% if session.get('theme') == 'light' %}background-color: #f8f9fa; color: #333;{% else %}background-color: #111; color: #eee;{% endif %}" class="py-4 mt-5 border-top">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <p class="mb-1">&copy; 2025 Vivvo.ai</p>
+                    <p class="small text-muted">{% if session.get('language') == 'ja' %}AIによる医療従事者向けエンゲージメントエンジン{% else %}The AI HCP Engagement Engine{% endif %}</p>
+                </div>
+                <div class="col-md-4 text-center d-flex align-items-center justify-content-center">
+                    <p>
+                        <a href="{{ url_for('about') }}" class="{% if session.get('theme') == 'light' %}text-dark{% else %}text-light{% endif %} text-decoration-none mx-2">
+                            {% if session.get('language') == 'ja' %}概要{% else %}About{% endif %}
+                        </a>
+                        <span class="text-muted mx-1">|</span>
+                        <a href="{{ url_for('login') }}" class="{% if session.get('theme') == 'light' %}text-dark{% else %}text-light{% endif %} text-decoration-none mx-2">
+                            {% if session.get('language') == 'ja' %}ログイン{% else %}Login{% endif %}
+                        </a>
+                    </p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <p class="text-muted">v1.0.0</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JS -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/animations.js') }}"></script>
+    
+    <!-- Theme Switcher Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Setup the theme switch
+            const themeSwitch = document.getElementById('themeSwitch');
+            const themeIcon = document.getElementById('theme-icon');
+            const htmlElement = document.documentElement;
+            
+            // Function to update theme locally
+            function updateThemeUI(theme) {
+                // Set the data-bs-theme attribute
+                htmlElement.setAttribute('data-bs-theme', theme);
+                
+                // Update icon
+                if (theme === 'light') {
+                    themeIcon.classList.remove('fa-moon');
+                    themeIcon.classList.add('fa-sun');
+                } else {
+                    themeIcon.classList.remove('fa-sun');
+                    themeIcon.classList.add('fa-moon');
+                }
+            }
+            
+            // Add event listener
+            if (themeSwitch) {
+                themeSwitch.addEventListener('change', function() {
+                    const newTheme = this.checked ? 'light' : 'dark';
+                    
+                    // Update UI immediately
+                    updateThemeUI(newTheme);
+                    
+                    // Send request to server to save preference (using GET request)
+                    fetch('/set_theme/' + newTheme, {method: 'GET'})
+                        .then(response => {
+                            console.log('Theme preference saved');
+                        })
+                        .catch(error => {
+                            console.error('Error saving theme preference:', error);
+                        });
+                });
+            }
+        });
+    </script>
+    
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

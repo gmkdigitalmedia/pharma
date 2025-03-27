@@ -1,0 +1,266 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Vivvo.ai{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+            <div class="list-group list-group-flush mt-4">
+                <a href="{{ url_for('dashboard') }}" class="list-group-item list-group-item-action active">
+                    <i class="fas fa-tachometer-alt sidebar-icon"></i>Dashboard
+                </a>
+                <a href="{{ url_for('meditag') }}" class="list-group-item list-group-item-action">
+                    <i class="fas fa-tag sidebar-icon"></i>MediTag Engine
+                </a>
+                <a href="{{ url_for('contentcraft') }}" class="list-group-item list-group-item-action">
+                    <i class="fas fa-file-alt sidebar-icon"></i>ContentCraft AI
+                </a>
+                <a href="{{ url_for('engageoptic') }}" class="list-group-item list-group-item-action">
+                    <i class="fas fa-bullseye sidebar-icon"></i>EngageOptic
+                </a>
+                <a href="{{ url_for('insightlens') }}" class="list-group-item list-group-item-action">
+                    <i class="fas fa-chart-line sidebar-icon"></i>InsightLens
+                </a>
+                
+                {% if current_user.is_admin() %}
+                <div class="mt-4 mb-2 ps-3">
+                    <h6 class="text-uppercase text-muted">Admin</h6>
+                </div>
+                <a href="{{ url_for('admin_dashboard') }}" class="list-group-item list-group-item-action">
+                    <i class="fas fa-cog sidebar-icon"></i>Admin Dashboard
+                </a>
+                <a href="{{ url_for('admin_user_management') }}" class="list-group-item list-group-item-action">
+                    <i class="fas fa-users sidebar-icon"></i>User Management
+                </a>
+                <a href="{{ url_for('admin_api_connections') }}" class="list-group-item list-group-item-action">
+                    <i class="fas fa-plug sidebar-icon"></i>API Connections
+                </a>
+                {% endif %}
+                
+                {% if current_user.is_manager() and not current_user.is_admin() %}
+                <div class="mt-4 mb-2 ps-3">
+                    <h6 class="text-uppercase text-muted">Manager</h6>
+                </div>
+                <a href="{{ url_for('manager_invite_user') }}" class="list-group-item list-group-item-action">
+                    <i class="fas fa-user-plus sidebar-icon"></i>Invite Team
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Dashboard</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <div class="btn-group me-2">
+                        <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Workflow Progress -->
+            <div class="card bg-dark mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Your Progress</h5>
+                </div>
+                <div class="card-body">
+                    <div class="progress workflow-progress">
+                        <div class="progress-bar bg-success" id="workflow-progress" role="progressbar" 
+                            style="width: {{ get_progress_percentage() }}%;" 
+                            aria-valuenow="{{ get_progress_percentage() }}" 
+                            aria-valuemin="0" 
+                            aria-valuemax="100">
+                            {{ get_progress_percentage() }}%
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <p>Completed steps:</p>
+                        <ul class="list-unstyled">
+                            {% for step in get_progress() %}
+                                <li><i class="fas fa-check-circle text-success me-2"></i> {{ step|capitalize }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Module Cards -->
+            <div class="row">
+                <!-- MediTag Card -->
+                <div class="col-md-6 col-lg-3 mb-4">
+                    <div class="card bg-dark h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-tag fa-3x mb-3 text-danger"></i>
+                            <h5 class="card-title">MediTag Engine</h5>
+                            <p class="card-text">Upload and tag HCP data based on prescribing patterns and engagement scores.</p>
+                            <a href="{{ url_for('meditag') }}" class="btn btn-outline-primary mt-2">Go to MediTag</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- ContentCraft Card -->
+                <div class="col-md-6 col-lg-3 mb-4">
+                    <div class="card bg-dark h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-file-alt fa-3x mb-3 text-info"></i>
+                            <h5 class="card-title">ContentCraft AI</h5>
+                            <p class="card-text">Generate personalized content for HCPs with automatic MLR pre-screening.</p>
+                            <a href="{{ url_for('contentcraft') }}" class="btn btn-outline-primary mt-2">Go to ContentCraft</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- EngageOptic Card -->
+                <div class="col-md-6 col-lg-3 mb-4">
+                    <div class="card bg-dark h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-bullseye fa-3x mb-3 text-success"></i>
+                            <h5 class="card-title">EngageOptic</h5>
+                            <p class="card-text">Optimize content delivery channels and timing for each HCP segment.</p>
+                            <a href="{{ url_for('engageoptic') }}" class="btn btn-outline-primary mt-2">Go to EngageOptic</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- InsightLens Card -->
+                <div class="col-md-6 col-lg-3 mb-4">
+                    <div class="card bg-dark h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-chart-line fa-3x mb-3 text-warning"></i>
+                            <h5 class="card-title">InsightLens</h5>
+                            <p class="card-text">Analyze campaign performance and compliance with detailed metrics.</p>
+                            <a href="{{ url_for('insightlens') }}" class="btn btn-outline-primary mt-2">Go to InsightLens</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            {% if current_user.is_admin() %}
+            <!-- Admin Cards -->
+            <h4 class="mt-5 mb-4 border-bottom pb-2">Administration</h4>
+            <div class="row">
+                <!-- Admin Dashboard Card -->
+                <div class="col-md-4 mb-4">
+                    <div class="card bg-dark h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-cog fa-3x mb-3 text-danger"></i>
+                            <h5 class="card-title">Admin Dashboard</h5>
+                            <p class="card-text">View system statistics, monitor API connections, and track user activity.</p>
+                            <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-primary mt-2">Admin Dashboard</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- User Management Card -->
+                <div class="col-md-4 mb-4">
+                    <div class="card bg-dark h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-users fa-3x mb-3 text-info"></i>
+                            <h5 class="card-title">User Management</h5>
+                            <p class="card-text">Manage users, roles, and invitations. Add administrators and managers.</p>
+                            <a href="{{ url_for('admin_user_management') }}" class="btn btn-outline-primary mt-2">Manage Users</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- API Connections Card -->
+                <div class="col-md-4 mb-4">
+                    <div class="card bg-dark h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-plug fa-3x mb-3 text-success"></i>
+                            <h5 class="card-title">API Connections</h5>
+                            <p class="card-text">Configure and manage external API connections to VEEVA, Salesforce, and more.</p>
+                            <a href="{{ url_for('admin_api_connections') }}" class="btn btn-outline-primary mt-2">Manage APIs</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            {% if current_user.is_manager() and not current_user.is_admin() %}
+            <!-- Manager Cards -->
+            <h4 class="mt-5 mb-4 border-bottom pb-2">Team Management</h4>
+            <div class="row">
+                <!-- Invite Team Card -->
+                <div class="col-md-6 offset-md-3 mb-4">
+                    <div class="card bg-dark h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-user-plus fa-3x mb-3 text-warning"></i>
+                            <h5 class="card-title">Team Management</h5>
+                            <p class="card-text">Invite and manage your sales agents. Track pending invitations and team members.</p>
+                            <a href="{{ url_for('manager_invite_user') }}" class="btn btn-outline-primary mt-2">Manage Team</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Quick Start Guide -->
+            <div class="card bg-dark mt-4 mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Quick Start Guide</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 text-center">
+                            <div class="mb-3">
+                                <i class="fas fa-tag fa-2x text-danger"></i>
+                            </div>
+                            <h6>Step 1: Upload HCP Data</h6>
+                            <p>Upload your HCP data in MediTag to segment your doctors.</p>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <div class="mb-3">
+                                <i class="fas fa-file-alt fa-2x text-info"></i>
+                            </div>
+                            <h6>Step 2: Generate Content</h6>
+                            <p>Create personalized content based on HCP segments.</p>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <div class="mb-3">
+                                <i class="fas fa-bullseye fa-2x text-success"></i>
+                            </div>
+                            <h6>Step 3: Plan Campaign</h6>
+                            <p>Select optimal channels and timing for delivery.</p>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <div class="mb-3">
+                                <i class="fas fa-chart-line fa-2x text-warning"></i>
+                            </div>
+                            <h6>Step 4: Track Results</h6>
+                            <p>Monitor engagement and compliance metrics.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <div class="card bg-dark">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="fas fa-building"></i> Organization: {{ current_user.organization.name }}
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>Industry:</strong> {{ current_user.organization.industry or 'Not specified' }}</p>
+                                    <p><strong>Your Role:</strong> {{ current_user.role|title }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>Description:</strong> {{ current_user.organization.description or 'No description available' }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}
