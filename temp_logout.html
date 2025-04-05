@@ -1,0 +1,7 @@
+                    <li class="nav-item">
+                        <form action="{{ url_for('logout') }}" method="post" style="margin:0; padding:0;">
+                            <button type="submit" class="nav-link btn" style="{% if session.get('theme') == 'light' %}color: #1a202c;{% else %}color: #e2e8f0;{% endif %} border:none; background:none; font-weight: 500; margin:0; padding: 0.5rem 1rem; text-align:left; width:100%;">
+                                {% if session.get('language') == 'ja' %}ログアウト{% else %}Logout{% endif %}
+                            </button>
+                        </form>
+                    </li>
