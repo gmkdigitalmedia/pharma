@@ -1,0 +1,201 @@
+{% extends "base.html" %}
+
+{% block title %}ContentCraft AI - Xupra{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+            <div class="list-group list-group-flush mt-4">
+                <a href="{{ url_for('dashboard') }}" class="list-group-item list-group-item-action">
+                    <i class="fas fa-tachometer-alt sidebar-icon"></i>Dashboard
+                </a>
+                <a href="{{ url_for('meditag') }}" class="list-group-item list-group-item-action">
+                    <i class="fas fa-tag sidebar-icon"></i>MediTag Engine
+                </a>
+                <a href="{{ url_for('contentcraft') }}" class="list-group-item list-group-item-action active">
+                    <i class="fas fa-file-alt sidebar-icon"></i>ContentCraft AI
+                </a>
+                <a href="{{ url_for('engageoptic') }}" class="list-group-item list-group-item-action">
+                    <i class="fas fa-bullseye sidebar-icon"></i>EngageOptic
+                </a>
+                <a href="{{ url_for('insightlens') }}" class="list-group-item list-group-item-action">
+                    <i class="fas fa-chart-line sidebar-icon"></i>InsightLens
+                </a>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2"><i class="fas fa-file-alt me-2"></i>ContentCraft AI</h1>
+                <!-- Progress Indicator -->
+                <div class="progress" style="width: 200px;">
+                    <div class="progress-bar bg-success" style="width: {{ get_progress_percentage() }}%">{{ get_progress_percentage() }}%</div>
+                </div>
+            </div>
+            
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            <div class="row">
+                <!-- Content Generation Form -->
+                <div class="col-md-5">
+                    <div class="card bg-dark mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">Generate Personalized Content</h5>
+                        </div>
+                        <div class="card-body">
+                            <form method="POST" id="contentcraft-form">
+                                {{ form.hidden_tag() }}
+                                <div class="mb-3">
+                                    <label for="hcp" class="form-label">Select HCP</label>
+                                    {{ form.hcp(class="form-select") }}
+                                    <small class="text-muted">Choose an HCP to generate personalized content</small>
+                                </div>
+                                <div class="mb-3">
+                                    {{ form.submit(class="btn btn-primary w-100") }}
+                                </div>
+                            </form>
+                            
+                            <div class="mt-4">
+                                <h6>Content Preview</h6>
+                                <div id="content-preview" class="content-preview">
+                                    Select an HCP above to preview personalized content.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card bg-dark mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">MLR Pre-Screening</h5>
+                        </div>
+                        <div class="card-body">
+                            <p>The system automatically flags potentially risky terms such as:</p>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item bg-dark">
+                                    <span class="text-danger">⚠</span> "cure", "guarantee", "proven"
+                                </li>
+                                <li class="list-group-item bg-dark">
+                                    <span class="text-danger">⚠</span> "100%", "superior", "best"
+                                </li>
+                                <li class="list-group-item bg-dark">
+                                    <span class="text-danger">⚠</span> "breakthrough", "revolutionary"
+                                </li>
+                                <li class="list-group-item bg-dark">
+                                    <span class="text-danger">⚠</span> "magic", "perfect", "safe"
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Generated Content Table -->
+                <div class="col-md-7">
+                    <div class="card bg-dark mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">Generated Content</h5>
+                        </div>
+                        <div class="card-body">
+                            {% if contents %}
+                            <div class="table-responsive">
+                                <table class="table table-dark table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>HCP</th>
+                                            <th>Status</th>
+                                            <th>Created</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for content in contents %}
+                                        <tr>
+                                            <td>{{ content.id }}</td>
+                                            <td>{{ content.hcp.name }} <span class="tag-{{ content.hcp.tag }}">⬤</span></td>
+                                            <td>
+                                                {% if content.status == 'Approved' %}
+                                                <span class="badge bg-success">Approved</span>
+                                                {% elif content.status == 'Flagged' %}
+                                                <span class="badge bg-warning">Flagged</span>
+                                                {% else %}
+                                                <span class="badge bg-secondary">Draft</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>{{ content.created_at.strftime('%Y-%m-%d') }}</td>
+                                            <td>
+                                                <button type="button" class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#contentModal{{ content.id }}">
+                                                    View
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        
+                                        <!-- Content Modal -->
+                                        <div class="modal fade" id="contentModal{{ content.id }}" tabindex="-1" aria-hidden="true">
+                                            <div class="modal-dialog modal-lg">
+                                                <div class="modal-content bg-dark">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">Content for {{ content.hcp.name }}</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <div class="content-text" data-flags="{{ content.get_flags() }}">
+                                                            {{ content.content_text|replace('\n', '<br>')|safe }}
+                                                        </div>
+                                                        
+                                                        {% if content.get_flags() %}
+                                                        <div class="alert alert-warning mt-3">
+                                                            <h6><i class="fas fa-exclamation-triangle me-2"></i>Flagged Terms</h6>
+                                                            <ul class="mb-0">
+                                                                {% for flag in content.get_flags() %}
+                                                                <li>{{ flag }}</li>
+                                                                {% endfor %}
+                                                            </ul>
+                                                        </div>
+                                                        {% endif %}
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                        {% if content.status == 'Flagged' %}
+                                                        <button type="button" class="btn btn-primary" disabled>Edit Content</button>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            {% else %}
+                            <div class="text-center py-4">
+                                <i class="fas fa-file-alt fa-3x mb-3 text-muted"></i>
+                                <p>No content generated yet. Use the form to create personalized content.</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    {% if contents %}
+                    <div class="text-end">
+                        <a href="{{ url_for('engageoptic') }}" class="btn btn-primary">
+                            Next: Plan Campaigns <i class="fas fa-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}

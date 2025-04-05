@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Xupra{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 col-lg-2 sidebar">
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link active" href="{{ url_for('admin_dashboard') }}">
+                        <i class="fas fa-tachometer-alt sidebar-icon"></i>Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('admin_user_management') }}">
+                        <i class="fas fa-users sidebar-icon"></i>User Management
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('admin_api_connections') }}">
+                        <i class="fas fa-plug sidebar-icon"></i>API Connections
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('dashboard') }}">
+                        <i class="fas fa-arrow-left sidebar-icon"></i>Return to App
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Main content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1>Admin Dashboard</h1>
+            </div>
+
+            <div class="row">
+                <!-- User Stats Card -->
+                <div class="col-xl-4 col-md-6 mb-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-users me-2"></i>User Statistics</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row text-center">
+                                <div class="col-4">
+                                    <h2>{{ stats.admin_count }}</h2>
+                                    <p>Admins</p>
+                                </div>
+                                <div class="col-4">
+                                    <h2>{{ stats.manager_count }}</h2>
+                                    <p>Managers</p>
+                                </div>
+                                <div class="col-4">
+                                    <h2>{{ stats.agent_count }}</h2>
+                                    <p>Agents</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <a href="{{ url_for('admin_user_management') }}" class="btn btn-sm btn-outline-primary">Manage Users</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- API Connections Card -->
+                <div class="col-xl-4 col-md-6 mb-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-plug me-2"></i>API Connections</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row text-center">
+                                <div class="col-6">
+                                    <h2>{{ stats.active_api_count }}</h2>
+                                    <p>Active</p>
+                                </div>
+                                <div class="col-6">
+                                    <h2>{{ stats.inactive_api_count }}</h2>
+                                    <p>Inactive</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <a href="{{ url_for('admin_api_connections') }}" class="btn btn-sm btn-outline-primary">Manage APIs</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- System Status Card -->
+                <div class="col-xl-4 col-md-6 mb-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-server me-2"></i>System Status</h5>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-unstyled">
+                                <li class="mb-2">
+                                    <span class="badge bg-success me-2">Active</span> Database Connection
+                                </li>
+                                <li class="mb-2">
+                                    <span class="badge {% if stats.veeva_connected %}bg-success{% else %}bg-danger{% endif %} me-2">
+                                        {% if stats.veeva_connected %}Connected{% else %}Disconnected{% endif %}
+                                    </span> VEEVA CRM
+                                </li>
+                                <li class="mb-2">
+                                    <span class="badge {% if stats.salesforce_connected %}bg-success{% else %}bg-danger{% endif %} me-2">
+                                        {% if stats.salesforce_connected %}Connected{% else %}Disconnected{% endif %}
+                                    </span> Salesforce
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="card-footer">
+                            <span class="text-muted">Last checked: {{ stats.last_checked }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-history me-2"></i>Recent Activity</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>User</th>
+                                            <th>Action</th>
+                                            <th>Time</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for activity in recent_activity %}
+                                        <tr>
+                                            <td>{{ activity.user }}</td>
+                                            <td>{{ activity.action }}</td>
+                                            <td>{{ activity.time }}</td>
+                                        </tr>
+                                        {% else %}
+                                        <tr>
+                                            <td colspan="3" class="text-center">No recent activity</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}

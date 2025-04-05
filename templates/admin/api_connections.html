@@ -1,0 +1,582 @@
+{% extends "base.html" %}
+
+{% block title %}API Connections - Xupra{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 col-lg-2 sidebar">
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('admin_dashboard') }}">
+                        <i class="fas fa-tachometer-alt sidebar-icon"></i>Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('admin_user_management') }}">
+                        <i class="fas fa-users sidebar-icon"></i>User Management
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="{{ url_for('admin_api_connections') }}">
+                        <i class="fas fa-plug sidebar-icon"></i>API Connections
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('dashboard') }}">
+                        <i class="fas fa-arrow-left sidebar-icon"></i>Return to App
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Main content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1>API Connections</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addApiConnectionModal">
+                        <i class="fas fa-plus me-1"></i> Add Connection
+                    </button>
+                </div>
+            </div>
+
+            <!-- API Connection Cards -->
+            <div class="row">
+                {% for connection in api_connections %}
+                <div class="col-md-6 col-xl-4 mb-4">
+                    <div class="card h-100 {% if connection.is_active %}border-success{% else %}border-secondary{% endif %}">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">
+                                {% if connection.name == 'VEEVA' %}
+                                <i class="fas fa-clinic-medical text-primary me-2"></i>
+                                {% elif connection.name == 'Salesforce' %}
+                                <i class="fas fa-cloud text-primary me-2"></i>
+                                {% elif connection.name == 'Slack' %}
+                                <i class="fab fa-slack text-primary me-2"></i>
+                                {% elif connection.name == 'Oncore' %}
+                                <i class="fas fa-database text-primary me-2"></i>
+                                {% else %}
+                                <i class="fas fa-code text-primary me-2"></i>
+                                {% endif %}
+                                {% if connection.name == 'Custom' %}
+                                {{ connection.custom_name }}
+                                {% else %}
+                                {{ connection.name }}
+                                {% endif %}
+                            </h5>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" 
+                                       id="connection-toggle-{{ connection.id }}" 
+                                       data-connection-id="{{ connection.id }}"
+                                       {% if connection.is_active %}checked{% endif %}>
+                                <label class="form-check-label" for="connection-toggle-{{ connection.id }}">
+                                    {% if connection.is_active %}Active{% else %}Inactive{% endif %}
+                                </label>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">
+                                <small class="text-muted">API Key:</small><br>
+                                <code>{{ connection.api_key[:10] }}...{{ connection.api_key[-5:] }}</code>
+                            </p>
+                            {% if connection.base_url %}
+                            <p class="card-text">
+                                <small class="text-muted">Base URL:</small><br>
+                                <a href="{{ connection.base_url }}" target="_blank" class="text-truncate d-block">
+                                    {{ connection.base_url }}
+                                </a>
+                            </p>
+                            {% endif %}
+                            <p class="card-text">
+                                <small class="text-muted">Added by:</small> {{ connection.creator.username }}<br>
+                                <small class="text-muted">Created:</small> {{ connection.created_at|date }}<br>
+                                <small class="text-muted">Last updated:</small> {{ connection.last_updated|date }}
+                            </p>
+                        </div>
+                        <div class="card-footer">
+                            <button class="btn btn-sm btn-outline-primary me-1" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#editApiConnectionModal"
+                                    data-connection-id="{{ connection.id }}"
+                                    data-name="{{ connection.name }}"
+                                    data-custom-name="{{ connection.custom_name or '' }}"
+                                    data-api-key="{{ connection.api_key }}"
+                                    data-api-secret="{{ connection.api_secret or '' }}"
+                                    data-base-url="{{ connection.base_url or '' }}"
+                                    data-is-active="{{ connection.is_active }}">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#deleteApiConnectionModal"
+                                    data-connection-id="{{ connection.id }}"
+                                    data-name="{% if connection.name == 'Custom' %}{{ connection.custom_name }}{% else %}{{ connection.name }}{% endif %}">
+                                <i class="fas fa-trash-alt"></i> Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="col-12">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i> No API connections have been configured yet. 
+                        Click the "Add Connection" button to set up your first API integration.
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Integration Information -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Integration Information</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="accordion" id="integrationAccordion">
+                                <!-- VEEVA Integration -->
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="headingVeeva">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseVeeva" aria-expanded="false" aria-controls="collapseVeeva">
+                                            <i class="fas fa-clinic-medical me-2"></i> VEEVA CRM Integration
+                                        </button>
+                                    </h2>
+                                    <div id="collapseVeeva" class="accordion-collapse collapse" aria-labelledby="headingVeeva" data-bs-parent="#integrationAccordion">
+                                        <div class="accordion-body">
+                                            <p>Connect to VEEVA CRM to synchronize HCP data, approved content, and engagement records.</p>
+                                            <h6>Requirements:</h6>
+                                            <ul>
+                                                <li>VEEVA CRM API Key</li>
+                                                <li>VEEVA CRM API Secret</li>
+                                                <li>VEEVA CRM Base URL (e.g., <code>https://api.veevacrminternal.com</code>)</li>
+                                            </ul>
+                                            <a href="https://developer.veeva.com/api" target="_blank" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-external-link-alt me-1"></i> VEEVA API Documentation
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Salesforce Integration -->
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="headingSalesforce">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSalesforce" aria-expanded="false" aria-controls="collapseSalesforce">
+                                            <i class="fas fa-cloud me-2"></i> Salesforce Integration
+                                        </button>
+                                    </h2>
+                                    <div id="collapseSalesforce" class="accordion-collapse collapse" aria-labelledby="headingSalesforce" data-bs-parent="#integrationAccordion">
+                                        <div class="accordion-body">
+                                            <p>Connect to Salesforce to synchronize HCP data, engagement records, and reporting metrics.</p>
+                                            <h6>Requirements:</h6>
+                                            <ul>
+                                                <li>Salesforce API Key</li>
+                                                <li>Salesforce API Secret</li>
+                                                <li>Salesforce Instance URL</li>
+                                            </ul>
+                                            <a href="https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_what_is_rest_api.htm" target="_blank" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-external-link-alt me-1"></i> Salesforce API Documentation
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Slack Integration -->
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="headingSlack">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSlack" aria-expanded="false" aria-controls="collapseSlack">
+                                            <i class="fab fa-slack me-2"></i> Slack Integration
+                                        </button>
+                                    </h2>
+                                    <div id="collapseSlack" class="accordion-collapse collapse" aria-labelledby="headingSlack" data-bs-parent="#integrationAccordion">
+                                        <div class="accordion-body">
+                                            <p>Connect to Slack for notifications about content approvals, compliance flags, and user activity.</p>
+                                            <h6>Requirements:</h6>
+                                            <ul>
+                                                <li>Slack Bot Token</li>
+                                                <li>Slack Channel ID (optional)</li>
+                                            </ul>
+                                            <a href="https://api.slack.com/start/building" target="_blank" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-external-link-alt me-1"></i> Slack API Documentation
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Oncore Integration -->
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="headingOncore">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOncore" aria-expanded="false" aria-controls="collapseOncore">
+                                            <i class="fas fa-database me-2"></i> Oncore Integration
+                                        </button>
+                                    </h2>
+                                    <div id="collapseOncore" class="accordion-collapse collapse" aria-labelledby="headingOncore" data-bs-parent="#integrationAccordion">
+                                        <div class="accordion-body">
+                                            <p>Connect to Oncore for clinical trial data integration and investigator-specific content generation.</p>
+                                            <h6>Requirements:</h6>
+                                            <ul>
+                                                <li>Oncore API Key</li>
+                                                <li>Oncore Base URL</li>
+                                            </ul>
+                                            <a href="https://oncoredocs.example.com" target="_blank" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-external-link-alt me-1"></i> Oncore API Documentation
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Custom API Integration -->
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="headingCustom">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCustom" aria-expanded="false" aria-controls="collapseCustom">
+                                            <i class="fas fa-code me-2"></i> Custom API Integration
+                                        </button>
+                                    </h2>
+                                    <div id="collapseCustom" class="accordion-collapse collapse" aria-labelledby="headingCustom" data-bs-parent="#integrationAccordion">
+                                        <div class="accordion-body">
+                                            <p>Connect to any custom API service to extend Xupra's functionality.</p>
+                                            <h6>Requirements:</h6>
+                                            <ul>
+                                                <li>Custom Name (a descriptive name for your API)</li>
+                                                <li>API Key</li>
+                                                <li>API Secret (optional)</li>
+                                                <li>Base URL</li>
+                                            </ul>
+                                            <div class="alert alert-info">
+                                                <i class="fas fa-info-circle me-2"></i> Contact support for assistance with custom API integrations.
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- Add API Connection Modal -->
+<div class="modal fade" id="addApiConnectionModal" tabindex="-1" aria-labelledby="addApiConnectionModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addApiConnectionModalLabel">Add API Connection</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{{ url_for('admin_add_api_connection') }}">
+                {{ api_form.hidden_tag() }}
+                <div class="modal-body">
+                    <div class="mb-3">
+                        {{ api_form.name.label(class="form-label") }}
+                        {{ api_form.name(class="form-select", id="add-api-name") }}
+                        {% if api_form.name.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in api_form.name.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3" id="add-custom-name-group" style="display: none;">
+                        {{ api_form.custom_name.label(class="form-label") }}
+                        {{ api_form.custom_name(class="form-control") }}
+                        {% if api_form.custom_name.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in api_form.custom_name.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ api_form.api_key.label(class="form-label") }}
+                        {{ api_form.api_key(class="form-control") }}
+                        {% if api_form.api_key.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in api_form.api_key.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ api_form.api_secret.label(class="form-label") }}
+                        {{ api_form.api_secret(class="form-control") }}
+                        {% if api_form.api_secret.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in api_form.api_secret.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ api_form.base_url.label(class="form-label") }}
+                        {{ api_form.base_url(class="form-control") }}
+                        {% if api_form.base_url.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in api_form.base_url.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-check mb-3">
+                        {{ api_form.is_active(class="form-check-input") }}
+                        {{ api_form.is_active.label(class="form-check-label") }}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    {{ api_form.submit(class="btn btn-primary") }}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit API Connection Modal -->
+<div class="modal fade" id="editApiConnectionModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit API Connection</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{{ url_for('admin_update_api_connection') }}">
+                {{ api_form.hidden_tag() }}
+                <input type="hidden" name="connection_id" id="edit-connection-id">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        {{ api_form.name.label(class="form-label") }}
+                        {{ api_form.name(class="form-select", id="edit-api-name") }}
+                        {% if api_form.name.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in api_form.name.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3" id="edit-custom-name-group" style="display: none;">
+                        {{ api_form.custom_name.label(class="form-label") }}
+                        {{ api_form.custom_name(class="form-control", id="edit-custom-name") }}
+                        {% if api_form.custom_name.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in api_form.custom_name.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ api_form.api_key.label(class="form-label") }}
+                        {{ api_form.api_key(class="form-control", id="edit-api-key") }}
+                        {% if api_form.api_key.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in api_form.api_key.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ api_form.api_secret.label(class="form-label") }}
+                        {{ api_form.api_secret(class="form-control", id="edit-api-secret") }}
+                        {% if api_form.api_secret.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in api_form.api_secret.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ api_form.base_url.label(class="form-label") }}
+                        {{ api_form.base_url(class="form-control", id="edit-base-url") }}
+                        {% if api_form.base_url.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in api_form.base_url.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-check mb-3">
+                        {{ api_form.is_active(class="form-check-input", id="edit-is-active") }}
+                        {{ api_form.is_active.label(class="form-check-label") }}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    {{ api_form.submit(class="btn btn-primary") }}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Delete API Connection Modal -->
+<div class="modal fade" id="deleteApiConnectionModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Delete API Connection</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{{ url_for('admin_delete_api_connection') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="connection_id" id="delete-connection-id">
+                <div class="modal-body">
+                    <p>Are you sure you want to delete the connection to <span id="delete-connection-name" class="fw-bold"></span>?</p>
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i> This action cannot be undone. Any integrations using this connection will stop working.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger">Delete Connection</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add Connection - Show/Hide Custom Name Field
+        var addApiName = document.getElementById('add-api-name');
+        var addCustomNameGroup = document.getElementById('add-custom-name-group');
+        
+        if (addApiName && addCustomNameGroup) {
+            addApiName.addEventListener('change', function() {
+                if (this.value === 'Custom') {
+                    addCustomNameGroup.style.display = 'block';
+                } else {
+                    addCustomNameGroup.style.display = 'none';
+                }
+            });
+        }
+        
+        // Edit Connection - Show/Hide Custom Name Field
+        var editApiName = document.getElementById('edit-api-name');
+        var editCustomNameGroup = document.getElementById('edit-custom-name-group');
+        
+        if (editApiName && editCustomNameGroup) {
+            editApiName.addEventListener('change', function() {
+                if (this.value === 'Custom') {
+                    editCustomNameGroup.style.display = 'block';
+                } else {
+                    editCustomNameGroup.style.display = 'none';
+                }
+            });
+        }
+        
+        // Edit Connection Modal
+        var editApiConnectionModal = document.getElementById('editApiConnectionModal');
+        if (editApiConnectionModal) {
+            editApiConnectionModal.addEventListener('show.bs.modal', function(event) {
+                var button = event.relatedTarget;
+                var connectionId = button.getAttribute('data-connection-id');
+                var name = button.getAttribute('data-name');
+                var customName = button.getAttribute('data-custom-name');
+                var apiKey = button.getAttribute('data-api-key');
+                var apiSecret = button.getAttribute('data-api-secret');
+                var baseUrl = button.getAttribute('data-base-url');
+                var isActive = button.getAttribute('data-is-active') === 'True';
+                
+                document.getElementById('edit-connection-id').value = connectionId;
+                document.getElementById('edit-api-name').value = name;
+                
+                if (name === 'Custom') {
+                    document.getElementById('edit-custom-name-group').style.display = 'block';
+                    document.getElementById('edit-custom-name').value = customName;
+                } else {
+                    document.getElementById('edit-custom-name-group').style.display = 'none';
+                }
+                
+                document.getElementById('edit-api-key').value = apiKey;
+                document.getElementById('edit-api-secret').value = apiSecret;
+                document.getElementById('edit-base-url').value = baseUrl;
+                document.getElementById('edit-is-active').checked = isActive;
+            });
+        }
+        
+        // Delete Connection Modal
+        var deleteApiConnectionModal = document.getElementById('deleteApiConnectionModal');
+        if (deleteApiConnectionModal) {
+            deleteApiConnectionModal.addEventListener('show.bs.modal', function(event) {
+                var button = event.relatedTarget;
+                var connectionId = button.getAttribute('data-connection-id');
+                var name = button.getAttribute('data-name');
+                
+                document.getElementById('delete-connection-id').value = connectionId;
+                document.getElementById('delete-connection-name').textContent = name;
+            });
+        }
+        
+        // Toggle Connection Status
+        document.querySelectorAll('[id^="connection-toggle-"]').forEach(function(toggle) {
+            toggle.addEventListener('change', function() {
+                var connectionId = this.getAttribute('data-connection-id');
+                var isActive = this.checked;
+                
+                fetch('{{ url_for("admin_toggle_api_connection") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        connection_id: connectionId,
+                        is_active: isActive
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update the label
+                        const label = this.nextElementSibling;
+                        label.textContent = isActive ? 'Active' : 'Inactive';
+                        
+                        // Update the card border
+                        const card = this.closest('.card');
+                        if (isActive) {
+                            card.classList.remove('border-secondary');
+                            card.classList.add('border-success');
+                        } else {
+                            card.classList.remove('border-success');
+                            card.classList.add('border-secondary');
+                        }
+                    } else {
+                        // If there was an error, revert the toggle
+                        this.checked = !isActive;
+                        alert('Failed to update connection status: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    this.checked = !isActive;
+                    console.error('Error:', error);
+                    alert('An error occurred while updating the connection status.');
+                });
+            });
+        });
+    });
+</script>
+{% endblock %}

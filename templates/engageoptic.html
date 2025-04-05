@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+
+{% block title %}EngageOptic - Xupra{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+            <div class="list-group list-group-flush mt-4">
+                <a href="{{ url_for('dashboard') }}" class="list-group-item list-group-item-action">
+                    <i class="fas fa-tachometer-alt sidebar-icon"></i>Dashboard
+                </a>
+                <a href="{{ url_for('meditag') }}" class="list-group-item list-group-item-action">
+                    <i class="fas fa-tag sidebar-icon"></i>MediTag Engine
+                </a>
+                <a href="{{ url_for('contentcraft') }}" class="list-group-item list-group-item-action">
+                    <i class="fas fa-file-alt sidebar-icon"></i>ContentCraft AI
+                </a>
+                <a href="{{ url_for('engageoptic') }}" class="list-group-item list-group-item-action active">
+                    <i class="fas fa-bullseye sidebar-icon"></i>EngageOptic
+                </a>
+                <a href="{{ url_for('insightlens') }}" class="list-group-item list-group-item-action">
+                    <i class="fas fa-chart-line sidebar-icon"></i>InsightLens
+                </a>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2"><i class="fas fa-bullseye me-2"></i>EngageOptic</h1>
+                <!-- Progress Indicator -->
+                <div class="progress" style="width: 200px;">
+                    <div class="progress-bar bg-success" style="width: {{ get_progress_percentage() }}%">{{ get_progress_percentage() }}%</div>
+                </div>
+            </div>
+            
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            <div class="row">
+                <!-- Campaign Planning Form -->
+                <div class="col-md-5">
+                    <div class="card bg-dark mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">Plan Campaign</h5>
+                        </div>
+                        <div class="card-body">
+                            <form method="POST" id="engageoptic-form">
+                                {{ form.hidden_tag() }}
+                                <div class="mb-3">
+                                    <label for="hcp" class="form-label">Select HCP</label>
+                                    {{ form.hcp(class="form-select") }}
+                                </div>
+                                <div class="mb-3">
+                                    <label for="content" class="form-label">Select Content</label>
+                                    {{ form.content(class="form-select") }}
+                                </div>
+                                <div class="mb-3">
+                                    {{ form.submit(class="btn btn-primary w-100") }}
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <div class="card bg-dark mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">Channel Mapping</h5>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item bg-dark">
+                                    <i class="fas fa-flask channel-icon text-danger"></i>
+                                    <strong>Early Adopters:</strong> Webinars (12 PM)
+                                </li>
+                                <li class="list-group-item bg-dark">
+                                    <i class="fas fa-chart-bar channel-icon text-info"></i>
+                                    <strong>Evidence-Driven:</strong> Webinars (12 PM)
+                                </li>
+                                <li class="list-group-item bg-dark">
+                                    <i class="fas fa-envelope channel-icon text-success"></i>
+                                    <strong>Patient-Focused:</strong> Email (9 AM)
+                                </li>
+                                <li class="list-group-item bg-dark">
+                                    <i class="fas fa-user-md channel-icon text-warning"></i>
+                                    <strong>Balanced:</strong> In-Person (2 PM)
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Campaign Plan Table -->
+                <div class="col-md-7">
+                    <div class="card bg-dark mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">Campaign Plans</h5>
+                        </div>
+                        <div class="card-body">
+                            {% if campaigns %}
+                            <div class="table-responsive">
+                                <table class="table table-dark table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>HCP</th>
+                                            <th>Channel</th>
+                                            <th>Timing</th>
+                                            <th>Status</th>
+                                            <th>Created</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for campaign in campaigns %}
+                                        <tr>
+                                            <td>{{ campaign.id }}</td>
+                                            <td>{{ campaign.content.hcp.name }} <span class="tag-{{ campaign.content.hcp.tag }}">⬤</span></td>
+                                            <td>
+                                                {% if campaign.channel == 'email' %}
+                                                <i class="fas fa-envelope me-2 text-success"></i>
+                                                {% elif campaign.channel == 'webinar' %}
+                                                <i class="fas fa-video me-2 text-info"></i>
+                                                {% elif campaign.channel == 'in-person' %}
+                                                <i class="fas fa-user-md me-2 text-warning"></i>
+                                                {% endif %}
+                                                {{ campaign.channel|capitalize }}
+                                            </td>
+                                            <td>{{ campaign.timing }}</td>
+                                            <td>
+                                                {% if campaign.status == 'Planned' %}
+                                                <span class="badge bg-primary">Planned</span>
+                                                {% elif campaign.status == 'Sent' %}
+                                                <span class="badge bg-info">Sent</span>
+                                                {% elif campaign.status == 'Completed' %}
+                                                <span class="badge bg-success">Completed</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>{{ campaign.created_at.strftime('%Y-%m-%d') }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            {% else %}
+                            <div class="text-center py-4">
+                                <i class="fas fa-bullseye fa-3x mb-3 text-muted"></i>
+                                <p>No campaigns planned yet. Use the form to create campaign plans.</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    {% if campaigns %}
+                    <div class="text-end">
+                        <a href="{{ url_for('insightlens') }}" class="btn btn-primary">
+                            Next: View Analytics <i class="fas fa-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}

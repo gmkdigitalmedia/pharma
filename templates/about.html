@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}About - Xupra{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card" style="background-color: #0f2942; border: 1px solid #1976d2;">
+                <div class="card-header" style="background-color: #1565c0;">
+                    <h1 class="h3 mb-0" style="color: #e3f2fd;">About Xupra</h1>
+                </div>
+                <div class="card-body">
+                    <p class="lead">Xupra is an AI-driven HCP Engagement Engine designed for pharmaceutical companies to create personalized, compliant marketing content.</p>
+                    
+                    <div class="text-center my-4">
+                        <svg height="2" width="100%">
+                            <line x1="0" y1="0" x2="100%" y2="0" style="stroke:#1976d2;stroke-width:2" />
+                        </svg>
+                    </div>
+                    
+                    <div class="row align-items-center mb-4">
+                        <div class="col-md-4 text-center mb-3 mb-md-0">
+                            <div class="rounded-circle bg-primary mx-auto d-flex align-items-center justify-content-center" style="width: 150px; height: 150px; background: linear-gradient(135deg, #0f2942, #1565c0);">
+                                <i class="fas fa-user fa-5x" style="color: #e3f2fd;"></i>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <h2 class="h4" style="color: #90caf9;">GP Shangari</h2>
+                            <h3 class="h5 text-muted">Cofounder - CTO</h3>
+                            <p class="mb-2"><i class="fas fa-map-marker-alt me-2" style="color: #2196f3;"></i>Tokyo, Japan</p>
+                            <p class="mb-2">
+                                <i class="fas fa-envelope me-2" style="color: #2196f3;"></i>
+                                <a href="mailto:gmkdigitalmedia@gmail.com" class="text-reset">gmkdigitalmedia@gmail.com</a>
+                            </p>
+                            <p class="mb-2">
+                                <i class="fab fa-linkedin me-2" style="color: #2196f3;"></i>
+                                <a href="https://www.linkedin.com/in/gp-shangari-6166312a6/" target="_blank" class="text-reset">LinkedIn Profile</a>
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <h3 class="h5 mt-4" style="color: #90caf9;">Profile</h3>
+                    <p>Backend and AI Developer with 15+ years of experience building scalable systems, deploying AI/ML models, and optimizing data pipelines. Proficient in Python, TensorFlow, PyTorch, and cloud-native development (AWS, Azure). Passionate about solving complex problems with efficient code and collaborative engineering. Worked with Business automation.</p>
+                    
+                    <h3 class="h5 mt-4" style="color: #90caf9;">Skills</h3>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <ul class="list-unstyled">
+                                <li class="mb-2"><i class="fas fa-check-circle me-2" style="color: #2196f3;"></i>Python Development</li>
+                                <li class="mb-2"><i class="fas fa-check-circle me-2" style="color: #2196f3;"></i>TensorFlow</li>
+                                <li class="mb-2"><i class="fas fa-check-circle me-2" style="color: #2196f3;"></i>PyTorch</li>
+                                <li class="mb-2"><i class="fas fa-check-circle me-2" style="color: #2196f3;"></i>Cloud Architecture</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <ul class="list-unstyled">
+                                <li class="mb-2"><i class="fas fa-check-circle me-2" style="color: #2196f3;"></i>AI/ML Deployment</li>
+                                <li class="mb-2"><i class="fas fa-check-circle me-2" style="color: #2196f3;"></i>Data Pipeline Optimization</li>
+                                <li class="mb-2"><i class="fas fa-check-circle me-2" style="color: #2196f3;"></i>Business Automation</li>
+                                <li class="mb-2"><i class="fas fa-check-circle me-2" style="color: #2196f3;"></i>System Architecture</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center mt-4">
+                        <a href="{{ url_for('homepage') }}" class="btn btn-glow" style="background-color: #2196f3; color: white;">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Home
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

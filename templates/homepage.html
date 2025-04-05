@@ -1,0 +1,900 @@
+{% extends "base.html" %}
+
+{% block title %}
+Xupra - {% if session.get('language') == 'ja' %}AIによる医療従事者向けエンゲージメントエンジン{% else %}The AI HCP Engagement Engine{% endif %}
+{% endblock %}
+
+{% block extra_head %}
+<!-- Material Design Icons -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<!-- Google Fonts - Roboto for Material Design -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap">
+<style>
+  :root {
+    /* Material Design Colors - Light Theme */
+    --md-light-primary: #3f51b5;  /* Indigo 500 */
+    --md-light-primary-dark: #303f9f;  /* Indigo 700 */
+    --md-light-primary-light: #c5cae9;  /* Indigo 100 */
+    --md-light-accent: #00bcd4;  /* Cyan 500 */
+    --md-light-background: #f5f5f5;  /* Grey 100 */
+    --md-light-surface: #ffffff;
+    --md-light-error: #b00020;
+    --md-light-text-primary: rgba(0, 0, 0, 0.87);
+    --md-light-text-secondary: rgba(0, 0, 0, 0.6);
+    --md-light-text-hint: rgba(0, 0, 0, 0.38);
+    
+    /* Material Design Colors - Dark Theme */
+    --md-dark-primary: #7986cb;  /* Indigo 300 */
+    --md-dark-primary-dark: #3949ab;  /* Indigo 600 */
+    --md-dark-primary-light: #9fa8da;  /* Indigo 200 */
+    --md-dark-accent: #26c6da;  /* Cyan 400 */
+    --md-dark-background: #121212;
+    --md-dark-surface: #1e1e1e;
+    --md-dark-error: #cf6679;
+    --md-dark-text-primary: rgba(255, 255, 255, 0.87);
+    --md-dark-text-secondary: rgba(255, 255, 255, 0.6);
+    --md-dark-text-hint: rgba(255, 255, 255, 0.38);
+    
+    /* Spacing */
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    --spacing-xl: 32px;
+    --spacing-xxl: 48px;
+    
+    /* Elevation (shadows) */
+    --md-elevation-1: 0 2px 1px -1px rgba(0,0,0,0.2), 0 1px 1px 0 rgba(0,0,0,0.14), 0 1px 3px 0 rgba(0,0,0,0.12);
+    --md-elevation-2: 0 3px 1px -2px rgba(0,0,0,0.2), 0 2px 2px 0 rgba(0,0,0,0.14), 0 1px 5px 0 rgba(0,0,0,0.12);
+    --md-elevation-4: 0 2px 4px -1px rgba(0,0,0,0.2), 0 4px 5px 0 rgba(0,0,0,0.14), 0 1px 10px 0 rgba(0,0,0,0.12);
+    --md-elevation-8: 0 5px 5px -3px rgba(0,0,0,0.2), 0 8px 10px 1px rgba(0,0,0,0.14), 0 3px 14px 2px rgba(0,0,0,0.12);
+  }
+  
+  /* Base styles */
+  body {
+    font-family: 'Roboto', sans-serif;
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  [data-bs-theme="light"] {
+    --md-primary: var(--md-light-primary);
+    --md-primary-dark: var(--md-light-primary-dark);
+    --md-primary-light: var(--md-light-primary-light);
+    --md-accent: var(--md-light-accent);
+    --md-background: var(--md-light-background);
+    --md-surface: var(--md-light-surface);
+    --md-error: var(--md-light-error);
+    --md-text-primary: var(--md-light-text-primary);
+    --md-text-secondary: var(--md-light-text-secondary);
+    --md-text-hint: var(--md-light-text-hint);
+  }
+  
+  [data-bs-theme="dark"] {
+    --md-primary: var(--md-dark-primary);
+    --md-primary-dark: var(--md-dark-primary-dark);
+    --md-primary-light: var(--md-dark-primary-light);
+    --md-accent: var(--md-dark-accent);
+    --md-background: var(--md-dark-background);
+    --md-surface: var(--md-dark-surface);
+    --md-error: var(--md-dark-error);
+    --md-text-primary: var(--md-dark-text-primary);
+    --md-text-secondary: var(--md-dark-text-secondary);
+    --md-text-hint: var(--md-dark-text-hint);
+  }
+  
+  /* Hero section */
+  .hero-container {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    background-color: var(--md-background);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  
+  .hero-grid-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+      linear-gradient(to right, var(--md-primary-light) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--md-primary-light) 1px, transparent 1px);
+    background-size: 30px 30px;
+    opacity: 0.15;
+    z-index: 1;
+  }
+  
+  .hero-dots {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: radial-gradient(var(--md-primary-light) 1px, transparent 1px);
+    background-size: 20px 20px;
+    opacity: 0.2;
+    z-index: 1;
+  }
+  
+  .hero-content-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 1200px;
+    padding: 0 var(--spacing-lg);
+    z-index: 2;
+    text-align: center;
+  }
+  
+  .hero-title {
+    font-size: 3.5rem;
+    font-weight: 300;
+    color: var(--md-text-primary);
+    margin-bottom: var(--spacing-lg);
+    line-height: 1.2;
+  }
+  
+  .hero-title .highlight {
+    color: var(--md-primary);
+    font-weight: 500;
+  }
+  
+  .hero-subtitle {
+    font-size: 1.25rem;
+    font-weight: 400;
+    color: var(--md-text-secondary);
+    margin-bottom: var(--spacing-xl);
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .hero-actions {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-xxl);
+  }
+  
+  /* Material Design Buttons */
+  .md-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    min-width: 64px;
+    height: 36px;
+    padding: 0 16px;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    letter-spacing: 0.0892857143em;
+    text-transform: uppercase;
+    overflow: hidden;
+    transition: background-color 0.3s, box-shadow 0.3s;
+    cursor: pointer;
+    text-decoration: none;
+  }
+  
+  .md-btn-contained {
+    background-color: var(--md-primary);
+    color: white;
+    box-shadow: var(--md-elevation-2);
+  }
+  
+  .md-btn-contained:hover {
+    background-color: var(--md-primary-dark);
+    box-shadow: var(--md-elevation-4);
+  }
+  
+  .md-btn-outlined {
+    background-color: transparent;
+    color: var(--md-primary);
+    border: 1px solid var(--md-primary);
+  }
+  
+  .md-btn-outlined:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+  }
+  
+  .md-btn-text {
+    background-color: transparent;
+    color: var(--md-primary);
+  }
+  
+  .md-btn-text:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+  }
+  
+  /* Feature section */
+  .features-section {
+    padding: var(--spacing-xxl) 0;
+    background-color: var(--md-surface);
+  }
+  
+  .section-title {
+    font-size: 2.25rem;
+    font-weight: 300;
+    color: var(--md-text-primary);
+    text-align: center;
+    margin-bottom: var(--spacing-xl);
+  }
+  
+  .card-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--spacing-xl);
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-lg);
+  }
+  
+  .md-card {
+    background-color: var(--md-surface);
+    border-radius: 4px;
+    box-shadow: var(--md-elevation-1);
+    overflow: hidden;
+    transition: box-shadow 0.3s ease;
+    width: 100%;
+    max-width: 350px;
+    margin-bottom: var(--spacing-lg);
+  }
+  
+  .md-card:hover {
+    box-shadow: var(--md-elevation-4);
+  }
+  
+  .md-card-media {
+    position: relative;
+    height: 160px;
+    background-color: var(--md-primary-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  
+  .md-card-icon {
+    font-size: 64px;
+    color: var(--md-primary);
+  }
+  
+  .md-card-content {
+    padding: var(--spacing-lg);
+  }
+  
+  .md-card-title {
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: var(--md-text-primary);
+    margin-bottom: var(--spacing-sm);
+  }
+  
+  .md-card-text {
+    font-size: 0.875rem;
+    color: var(--md-text-secondary);
+    margin-bottom: var(--spacing-md);
+    line-height: 1.6;
+  }
+  
+  .md-card-actions {
+    padding: var(--spacing-sm) var(--spacing-lg) var(--spacing-lg);
+    display: flex;
+    justify-content: flex-end;
+  }
+  
+  /* Detail Sections */
+  .detail-section {
+    padding: var(--spacing-xxl) 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+  }
+  
+  [data-bs-theme="dark"] .detail-section {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  }
+  
+  .detail-section:last-child {
+    border-bottom: none;
+  }
+  
+  .detail-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-lg);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--spacing-xl);
+  }
+  
+  .detail-content {
+    flex: 1;
+    min-width: 300px;
+  }
+  
+  .detail-number {
+    font-family: 'Roboto Mono', monospace;
+    font-size: 0.875rem;
+    color: var(--md-primary);
+    margin-bottom: var(--spacing-sm);
+  }
+  
+  .detail-title {
+    font-size: 2rem;
+    font-weight: 300;
+    color: white; /* Always white to ensure visibility on dark backgrounds */
+    margin-bottom: var(--spacing-md);
+  }
+  
+  .detail-description {
+    font-size: 1rem;
+    color: var(--md-text-secondary);
+    margin-bottom: var(--spacing-lg);
+    line-height: 1.6;
+  }
+  
+  /* Light mode text overrides */
+  [data-bs-theme="light"] .detail-description {
+    color: #4a5568;
+  }
+  
+  [data-bs-theme="light"] text {
+    fill: #1a202c !important;
+  }
+  
+  /* Fix for detail section titles in light mode */
+  [data-bs-theme="light"] .detail-number {
+    color: #0070dd;
+  }
+  
+  [data-bs-theme="light"] .detail-section {
+    background-color: #0a0e17;
+  }
+  
+  [data-bs-theme="light"] .detail-section .detail-title {
+    color: #ffffff !important;
+  }
+  
+  /* Dark mode text overrides */
+  [data-bs-theme="dark"] .detail-title {
+    color: #e2e8f0;
+  }
+  
+  [data-bs-theme="dark"] .detail-description {
+    color: #a0aec0;
+  }
+  
+  [data-bs-theme="dark"] text {
+    fill: #e2e8f0 !important;
+  }
+  
+  .detail-visual {
+    flex: 1;
+    min-width: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .detail-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+    box-shadow: var(--md-elevation-2);
+  }
+  
+  /* CTA Section */
+  .cta-section {
+    padding: var(--spacing-xxl) 0;
+    background-color: var(--md-primary-light);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  [data-bs-theme="dark"] .cta-section {
+    background-color: var(--md-primary-dark);
+  }
+  
+  .cta-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-lg);
+    text-align: center;
+    position: relative;
+    z-index: 2;
+  }
+  
+  .cta-title {
+    font-size: 2.5rem;
+    font-weight: 300;
+    color: var(--md-text-primary);
+    margin-bottom: var(--spacing-lg);
+  }
+  
+  .cta-text {
+    font-size: 1.125rem;
+    color: var(--md-text-secondary);
+    margin-bottom: var(--spacing-xl);
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  /* Light mode CTA overrides */
+  [data-bs-theme="light"] .cta-title {
+    color: #1a202c;
+  }
+  
+  [data-bs-theme="light"] .cta-text {
+    color: #4a5568;
+  }
+  
+  /* Dark mode CTA overrides */
+  [data-bs-theme="dark"] .cta-title {
+    color: #e2e8f0;
+  }
+  
+  [data-bs-theme="dark"] .cta-text {
+    color: #a0aec0;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .hero-title {
+      font-size: 2.5rem;
+    }
+    
+    .hero-subtitle {
+      font-size: 1rem;
+    }
+    
+    .section-title {
+      font-size: 1.75rem;
+    }
+    
+    .detail-title {
+      font-size: 1.5rem;
+    }
+    
+    .cta-title {
+      font-size: 1.75rem;
+    }
+    
+    .card-container {
+      justify-content: center;
+    }
+    
+    .hero-actions {
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .md-btn {
+      width: 100%;
+      max-width: 250px;
+      margin-bottom: var(--spacing-sm);
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .hero-title {
+      font-size: 2rem;
+    }
+    
+    .hero-subtitle {
+      font-size: 0.875rem;
+    }
+    
+    .section-title {
+      font-size: 1.5rem;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-container">
+  <div class="hero-grid-overlay"></div>
+  <div class="hero-dots"></div>
+  <div class="hero-content-wrapper">
+    <h1 class="hero-title">
+      {% if session.get('language') == 'ja' %}
+      <span class="highlight">AI搭載</span>のHCPエンゲージメントプラットフォーム
+      {% else %}
+      The <span class="highlight">AI-Powered</span><br>
+      HCP Engagement Platform<br>
+      for Pharmaceutical Innovation
+      {% endif %}
+    </h1>
+    <p class="hero-subtitle">
+      {% if session.get('language') == 'ja' %}
+      Xupraは人工知能を活用し、パーソナライズされたコンプライアントなマーケティングを通じてあらゆる接点でHCPエンゲージメントを強化します。
+      {% else %}
+      Xupra leverages artificial intelligence to enhance HCP engagement with personalized, compliant marketing across every touchpoint.
+      {% endif %}
+    </p>
+    <div class="hero-actions">
+      <a href="{{ url_for('register') }}" class="md-btn md-btn-contained">
+        {% if session.get('language') == 'ja' %}今すぐ始める{% else %}Get Started{% endif %}
+      </a>
+      <a href="{{ url_for('about') }}" class="md-btn md-btn-outlined">
+        {% if session.get('language') == 'ja' %}詳細を見る{% else %}Learn More{% endif %}
+      </a>
+    </div>
+    
+    <!-- Network Visualization SVG -->
+    <svg width="100%" height="200" viewBox="0 0 600 200" xmlns="http://www.w3.org/2000/svg">
+      <g fill="none">
+        <!-- Central circle -->
+        <circle cx="300" cy="100" r="30" fill="var(--md-primary)" opacity="0.2" />
+        <circle cx="300" cy="100" r="30" stroke="var(--md-primary)" stroke-width="2" />
+        
+        <!-- Connected nodes -->
+        <g opacity="0.8">
+          <!-- Node connections -->
+          <line x1="300" y1="100" x2="200" y2="70" stroke="var(--md-primary)" stroke-width="1.5" />
+          <line x1="300" y1="100" x2="400" y2="50" stroke="var(--md-primary)" stroke-width="1.5" />
+          <line x1="300" y1="100" x2="450" y2="120" stroke="var(--md-primary)" stroke-width="1.5" />
+          <line x1="300" y1="100" x2="350" y2="170" stroke="var(--md-primary)" stroke-width="1.5" />
+          <line x1="300" y1="100" x2="180" y2="150" stroke="var(--md-primary)" stroke-width="1.5" />
+          
+          <!-- Nodes -->
+          <circle cx="200" cy="70" r="12" fill="var(--md-primary)" opacity="0.6" />
+          <circle cx="400" cy="50" r="15" fill="var(--md-primary)" opacity="0.6" />
+          <circle cx="450" cy="120" r="14" fill="var(--md-primary)" opacity="0.6" />
+          <circle cx="350" cy="170" r="12" fill="var(--md-primary)" opacity="0.6" />
+          <circle cx="180" cy="150" r="15" fill="var(--md-primary)" opacity="0.6" />
+        </g>
+        
+        <!-- Pulse animation on central node -->
+        <circle cx="300" cy="100" r="30" fill="var(--md-primary)" opacity="0.3">
+          <animate attributeName="r" values="30;40;30" dur="3s" repeatCount="indefinite" />
+          <animate attributeName="opacity" values="0.3;0.1;0.3" dur="3s" repeatCount="indefinite" />
+        </circle>
+        
+        <!-- Labels -->
+        <text x="300" y="105" text-anchor="middle" fill="var(--md-text-primary)" font-weight="500" font-size="12">Xupra</text>
+        <text x="200" y="70" text-anchor="middle" fill="var(--md-text-primary)" font-size="9">MediTag</text>
+        <text x="400" y="50" text-anchor="middle" fill="var(--md-text-primary)" font-size="9">ContentCraft</text>
+        <text x="450" cy="120" text-anchor="middle" fill="var(--md-text-primary)" font-size="9">EngageOptic</text>
+        <text x="350" y="170" text-anchor="middle" fill="var(--md-text-primary)" font-size="9">InsightLens</text>
+        <text x="180" y="150" text-anchor="middle" fill="var(--md-text-primary)" font-size="9">HCP Data</text>
+      </g>
+    </svg>
+  </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section">
+  <h2 class="section-title">
+    {% if session.get('language') == 'ja' %}
+      プラットフォームの特徴
+    {% else %}
+      Our Platform Features
+    {% endif %}
+  </h2>
+  
+  <div class="card-container">
+    <!-- MediTag Card -->
+    <div class="md-card">
+      <div class="md-card-media">
+        <i class="material-icons md-card-icon">label</i>
+      </div>
+      <div class="md-card-content">
+        <h3 class="md-card-title">MediTag Engine</h3>
+        <p class="md-card-text">
+          {% if session.get('language') == 'ja' %}
+            処方パターンと反応性に基づいて医療従事者を分類します。
+          {% else %}
+            Segment healthcare providers based on prescribing patterns and responsiveness.
+          {% endif %}
+        </p>
+      </div>
+      <div class="md-card-actions">
+        <a href="{{ url_for('login') }}" class="md-btn md-btn-text">
+          {% if session.get('language') == 'ja' %}詳細を見る{% else %}Explore{% endif %}
+        </a>
+      </div>
+    </div>
+    
+    <!-- ContentCraft Card -->
+    <div class="md-card">
+      <div class="md-card-media">
+        <i class="material-icons md-card-icon">create</i>
+      </div>
+      <div class="md-card-content">
+        <h3 class="md-card-title">ContentCraft AI</h3>
+        <p class="md-card-text">
+          {% if session.get('language') == 'ja' %}
+            MLR事前審査を備えたパーソナライズされたコンテンツ生成。
+          {% else %}
+            Generate personalized content with built-in MLR pre-screening compliance.
+          {% endif %}
+        </p>
+      </div>
+      <div class="md-card-actions">
+        <a href="{{ url_for('login') }}" class="md-btn md-btn-text">
+          {% if session.get('language') == 'ja' %}詳細を見る{% else %}Explore{% endif %}
+        </a>
+      </div>
+    </div>
+    
+    <!-- EngageOptic Card -->
+    <div class="md-card">
+      <div class="md-card-media">
+        <i class="material-icons md-card-icon">trending_up</i>
+      </div>
+      <div class="md-card-content">
+        <h3 class="md-card-title">EngageOptic</h3>
+        <p class="md-card-text">
+          {% if session.get('language') == 'ja' %}
+            各医療従事者のためのチャネルとタイミングの最適化。
+          {% else %}
+            Optimize channels and timing for each healthcare provider segment.
+          {% endif %}
+        </p>
+      </div>
+      <div class="md-card-actions">
+        <a href="{{ url_for('login') }}" class="md-btn md-btn-text">
+          {% if session.get('language') == 'ja' %}詳細を見る{% else %}Explore{% endif %}
+        </a>
+      </div>
+    </div>
+    
+    <!-- InsightLens Card -->
+    <div class="md-card">
+      <div class="md-card-media">
+        <i class="material-icons md-card-icon">pie_chart</i>
+      </div>
+      <div class="md-card-content">
+        <h3 class="md-card-title">InsightLens</h3>
+        <p class="md-card-text">
+          {% if session.get('language') == 'ja' %}
+            詳細な指標でキャンペーンパフォーマンスを分析します。
+          {% else %}
+            Analyze campaign performance and compliance with detailed metrics.
+          {% endif %}
+        </p>
+      </div>
+      <div class="md-card-actions">
+        <a href="{{ url_for('login') }}" class="md-btn md-btn-text">
+          {% if session.get('language') == 'ja' %}詳細を見る{% else %}Explore{% endif %}
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Detail Sections -->
+<div class="detail-sections">
+  <!-- MediTag Detail -->
+  <section class="detail-section">
+    <div class="detail-container">
+      <div class="detail-content">
+        <div class="detail-number">/01</div>
+        <h3 class="detail-title">MediTag Engine</h3>
+        <p class="detail-description">
+          {% if session.get('language') == 'ja' %}
+            MediTagエンジンは先進的な機械学習を活用して処方データを分析し、医療従事者をセグメント化します。これにより、パーソナライズされたアプローチが可能になります。
+          {% else %}
+            Our MediTag Engine uses advanced machine learning to analyze prescribing data and segment healthcare providers, enabling a personalized approach to each physician based on their unique characteristics.
+          {% endif %}
+        </p>
+        <a href="{{ url_for('login') }}" class="md-btn md-btn-contained">
+          {% if session.get('language') == 'ja' %}始めましょう{% else %}Start Tagging{% endif %}
+        </a>
+      </div>
+      
+      <div class="detail-visual">
+        <svg width="100%" height="250" viewBox="0 0 500 250">
+          <g fill="none" stroke-width="2">
+            <!-- Tag clusters -->
+            <g transform="translate(120, 125)" stroke="var(--md-primary)" opacity="0.7">
+              <circle cx="0" cy="0" r="50" />
+              <text x="0" y="5" text-anchor="middle" fill="var(--md-text-primary)" font-size="12">Early Adopters</text>
+            </g>
+            <g transform="translate(250, 80)" stroke="var(--md-primary)" opacity="0.5">
+              <circle cx="0" cy="0" r="40" />
+              <text x="0" y="5" text-anchor="middle" fill="var(--md-text-primary)" font-size="12">Evidence Driven</text>
+            </g>
+            <g transform="translate(380, 140)" stroke="var(--md-primary)" opacity="0.6">
+              <circle cx="0" cy="0" r="45" />
+              <text x="0" y="5" text-anchor="middle" fill="var(--md-text-primary)" font-size="12">Patient Focused</text>
+            </g>
+            <g transform="translate(250, 180)" stroke="var(--md-primary)" opacity="0.4">
+              <circle cx="0" cy="0" r="30" />
+              <text x="0" y="5" text-anchor="middle" fill="var(--md-text-primary)" font-size="12">Balanced</text>
+            </g>
+          </g>
+        </svg>
+      </div>
+    </div>
+  </section>
+  
+  <!-- ContentCraft Detail -->
+  <section class="detail-section">
+    <div class="detail-container">
+      <div class="detail-visual">
+        <svg width="100%" height="250" viewBox="0 0 500 250">
+          <g fill="none">
+            <!-- Document outline -->
+            <rect x="100" y="50" width="300" height="170" rx="5" stroke="var(--md-primary)" stroke-width="2" />
+            
+            <!-- Document content lines -->
+            <line x1="130" y1="80" x2="370" y2="80" stroke="var(--md-primary)" stroke-width="2" opacity="0.7" />
+            <line x1="130" y1="110" x2="370" y2="110" stroke="var(--md-primary)" stroke-width="2" opacity="0.5" />
+            <line x1="130" y1="140" x2="370" y2="140" stroke="var(--md-primary)" stroke-width="2" opacity="0.6" />
+            <line x1="130" y1="170" x2="300" y2="170" stroke="var(--md-primary)" stroke-width="2" opacity="0.4" />
+            <line x1="130" y1="200" x2="250" y2="200" stroke="var(--md-primary)" stroke-width="2" opacity="0.5" />
+            
+            <!-- AI generation animation effect -->
+            <rect x="100" y="50" width="300" height="170" rx="5" fill="var(--md-primary)" opacity="0.1">
+              <animate attributeName="opacity" values="0.1;0.2;0.1" dur="3s" repeatCount="indefinite" />
+            </rect>
+          </g>
+        </svg>
+      </div>
+      
+      <div class="detail-content">
+        <div class="detail-number">/02</div>
+        <h3 class="detail-title">ContentCraft AI</h3>
+        <p class="detail-description">
+          {% if session.get('language') == 'ja' %}
+            ContentCraft AIは各医療従事者向けにパーソナライズされたコンテンツを生成し、法務・医療・レギュラトリー（MLR）コンプライアンスを自動的に確保します。
+          {% else %}
+            ContentCraft AI generates personalized content for each HCP, automatically ensuring Medical, Legal, and Regulatory (MLR) compliance while maintaining engagement effectiveness.
+          {% endif %}
+        </p>
+        <a href="{{ url_for('login') }}" class="md-btn md-btn-contained">
+          {% if session.get('language') == 'ja' %}コンテンツを作成{% else %}Create Content{% endif %}
+        </a>
+      </div>
+    </div>
+  </section>
+  
+  <!-- EngageOptic Detail -->
+  <section class="detail-section">
+    <div class="detail-container">
+      <div class="detail-content">
+        <div class="detail-number">/03</div>
+        <h3 class="detail-title">EngageOptic</h3>
+        <p class="detail-description">
+          {% if session.get('language') == 'ja' %}
+            EngageOpticは予測分析を活用して、各医療従事者向けに最適なエンゲージメントチャネルとタイミングを特定し、反応率を大幅に向上させます。
+          {% else %}
+            EngageOptic uses predictive analytics to identify the optimal engagement channels and timing for each HCP, significantly improving response rates and overall campaign performance.
+          {% endif %}
+        </p>
+        <a href="{{ url_for('login') }}" class="md-btn md-btn-contained">
+          {% if session.get('language') == 'ja' %}キャンペーンを最適化{% else %}Optimize Campaigns{% endif %}
+        </a>
+      </div>
+      
+      <div class="detail-visual">
+        <svg width="100%" height="250" viewBox="0 0 500 250">
+          <g fill="none">
+            <!-- Channel bars -->
+            <rect x="100" y="175" width="40" height="50" fill="var(--md-primary)" opacity="0.3" />
+            <rect x="170" y="125" width="40" height="100" fill="var(--md-primary)" opacity="0.6" />
+            <rect x="240" y="75" width="40" height="150" fill="var(--md-primary)" opacity="0.9" />
+            <rect x="310" y="145" width="40" height="80" fill="var(--md-primary)" opacity="0.5" />
+            <rect x="380" y="195" width="40" height="30" fill="var(--md-primary)" opacity="0.2" />
+            
+            <!-- Channel labels -->
+            <text x="120" y="240" text-anchor="middle" fill="var(--md-text-primary)" font-size="12">Email</text>
+            <text x="190" y="240" text-anchor="middle" fill="var(--md-text-primary)" font-size="12">Video</text>
+            <text x="260" y="240" text-anchor="middle" fill="var(--md-text-primary)" font-size="12">In-person</text>
+            <text x="330" y="240" text-anchor="middle" fill="var(--md-text-primary)" font-size="12">Webinar</text>
+            <text x="400" y="240" text-anchor="middle" fill="var(--md-text-primary)" font-size="12">Call</text>
+            
+            <!-- Axis -->
+            <line x1="80" y1="225" x2="450" y2="225" stroke="var(--md-primary)" stroke-width="2" opacity="0.5" />
+            <line x1="80" y1="50" x2="80" y2="225" stroke="var(--md-primary)" stroke-width="2" opacity="0.5" />
+            
+            <!-- Highlight pulse on best channel -->
+            <rect x="240" y="75" width="40" height="150" fill="var(--md-primary)" opacity="0.3">
+              <animate attributeName="opacity" values="0.3;0.6;0.3" dur="2s" repeatCount="indefinite" />
+            </rect>
+          </g>
+        </svg>
+      </div>
+    </div>
+  </section>
+  
+  <!-- InsightLens Detail -->
+  <section class="detail-section">
+    <div class="detail-container">
+      <div class="detail-visual">
+        <svg width="100%" height="250" viewBox="0 0 500 250">
+          <g fill="none">
+            <!-- Line graph -->
+            <polyline 
+              points="100,170 150,130 200,145 250,85 300,110 350,75 400,65" 
+              stroke="var(--md-primary)" 
+              stroke-width="3" 
+              fill="none" 
+              stroke-linecap="round" 
+              stroke-linejoin="round" />
+            
+            <!-- Area under the line -->
+            <path 
+              d="M100,170 L150,130 L200,145 L250,85 L300,110 L350,75 L400,65 L400,225 L100,225 Z" 
+              fill="var(--md-primary)" 
+              opacity="0.2" />
+            
+            <!-- Data points -->
+            <circle cx="100" cy="170" r="5" fill="var(--md-primary)" />
+            <circle cx="150" cy="130" r="5" fill="var(--md-primary)" />
+            <circle cx="200" cy="145" r="5" fill="var(--md-primary)" />
+            <circle cx="250" cy="85" r="5" fill="var(--md-primary)" />
+            <circle cx="300" cy="110" r="5" fill="var(--md-primary)" />
+            <circle cx="350" cy="75" r="5" fill="var(--md-primary)" />
+            <circle cx="400" cy="65" r="5" fill="var(--md-primary)" />
+            
+            <!-- Axis -->
+            <line x1="80" y1="225" x2="450" y2="225" stroke="var(--md-primary)" stroke-width="2" opacity="0.5" />
+            <line x1="80" y1="50" x2="80" y2="225" stroke="var(--md-primary)" stroke-width="2" opacity="0.5" />
+            
+            <!-- Pulse animation for best result -->
+            <circle cx="400" cy="65" r="8" fill="var(--md-primary)" opacity="0.2">
+              <animate attributeName="r" values="5;12;5" dur="2s" repeatCount="indefinite" />
+              <animate attributeName="opacity" values="0.2;0.4;0.2" dur="2s" repeatCount="indefinite" />
+            </circle>
+          </g>
+        </svg>
+      </div>
+      
+      <div class="detail-content">
+        <div class="detail-number">/04</div>
+        <h3 class="detail-title">InsightLens</h3>
+        <p class="detail-description">
+          {% if session.get('language') == 'ja' %}
+            InsightLensは詳細なキャンペーン分析と行動指向のインサイトを提供し、エンゲージメント戦略の継続的な改善を可能にします。
+          {% else %}
+            InsightLens provides detailed campaign analytics and actionable insights, enabling continuous improvement of engagement strategies and measuring compliance adherence.
+          {% endif %}
+        </p>
+        <a href="{{ url_for('login') }}" class="md-btn md-btn-contained">
+          {% if session.get('language') == 'ja' %}分析を見る{% else %}View Analytics{% endif %}
+        </a>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- CTA Section -->
+<section class="cta-section">
+  <div class="cta-container">
+    <h2 class="cta-title">
+      {% if session.get('language') == 'ja' %}
+        医療従事者向けデジタルエンゲージメントを今日から変革しましょう
+      {% else %}
+        Transform Your HCP Digital Engagement Today
+      {% endif %}
+    </h2>
+    <p class="cta-text">
+      {% if session.get('language') == 'ja' %}
+        Xupraのプラットフォームにサインアップし、AIを活用したHCPエンゲージメントの可能性を最大限に引き出しましょう。
+      {% else %}
+        Sign up for Xupra's platform today and unlock the full potential of AI-powered HCP engagement.
+      {% endif %}
+    </p>
+    <a href="{{ url_for('register_organization') }}" class="md-btn md-btn-contained">
+      {% if session.get('language') == 'ja' %}
+        今すぐ組織を登録
+      {% else %}
+        Register Your Organization Now
+      {% endif %}
+    </a>
+  </div>
+</section>
+{% endblock %}

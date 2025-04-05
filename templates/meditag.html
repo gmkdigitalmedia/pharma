@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+
+{% block title %}MediTag Engine - Xupra{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+            <div class="list-group list-group-flush mt-4">
+                <a href="{{ url_for('dashboard') }}" class="list-group-item list-group-item-action">
+                    <i class="fas fa-tachometer-alt sidebar-icon"></i>Dashboard
+                </a>
+                <a href="{{ url_for('meditag') }}" class="list-group-item list-group-item-action active">
+                    <i class="fas fa-tag sidebar-icon"></i>MediTag Engine
+                </a>
+                <a href="{{ url_for('contentcraft') }}" class="list-group-item list-group-item-action">
+                    <i class="fas fa-file-alt sidebar-icon"></i>ContentCraft AI
+                </a>
+                <a href="{{ url_for('engageoptic') }}" class="list-group-item list-group-item-action">
+                    <i class="fas fa-bullseye sidebar-icon"></i>EngageOptic
+                </a>
+                <a href="{{ url_for('insightlens') }}" class="list-group-item list-group-item-action">
+                    <i class="fas fa-chart-line sidebar-icon"></i>InsightLens
+                </a>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2"><i class="fas fa-tag me-2"></i>MediTag Engine</h1>
+                <!-- Progress Indicator -->
+                <div class="progress" style="width: 200px;">
+                    <div class="progress-bar bg-success" style="width: {{ get_progress_percentage() }}%">{{ get_progress_percentage() }}%</div>
+                </div>
+            </div>
+            
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            <div class="row">
+                <!-- Upload Form -->
+                <div class="col-md-5">
+                    <div class="card bg-dark mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">Upload HCP Data</h5>
+                        </div>
+                        <div class="card-body">
+                            <form method="POST" enctype="multipart/form-data">
+                                {{ form.hidden_tag() }}
+                                <div class="mb-3">
+                                    <label for="file" class="form-label">Select CSV File</label>
+                                    {{ form.file(class="form-control") }}
+                                    <small class="text-muted">
+                                        CSV should include columns: hcp_id, name, specialty, prescribing_pattern, engagement_score
+                                    </small>
+                                </div>
+                                <div class="mb-3">
+                                    {{ form.submit(class="btn btn-primary w-100") }}
+                                </div>
+                            </form>
+                            
+                            <div class="mt-4">
+                                <h6>Sample Format</h6>
+                                <pre class="bg-dark p-3 rounded"><code>hcp_id,name,specialty,prescribing_pattern,engagement_score
+1001,Dr. Smith,Cardiology,85,72
+1002,Dr. Johnson,Oncology,63,91
+1003,Dr. Williams,Neurology,45,42</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card bg-dark mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">Tag Descriptions</h5>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item bg-dark">
+                                    <span class="tag-early-adopter">⬤</span> <strong>Early Adopter</strong>: Prescribes new medications quickly, interested in innovation
+                                </li>
+                                <li class="list-group-item bg-dark">
+                                    <span class="tag-evidence-driven">⬤</span> <strong>Evidence-Driven</strong>: Focuses on clinical data and research findings
+                                </li>
+                                <li class="list-group-item bg-dark">
+                                    <span class="tag-patient-focused">⬤</span> <strong>Patient-Focused</strong>: Prioritizes patient experience and quality of life
+                                </li>
+                                <li class="list-group-item bg-dark">
+                                    <span class="tag-balanced">⬤</span> <strong>Balanced</strong>: Considers both evidence and patient factors equally
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Tagged HCPs Table -->
+                <div class="col-md-7">
+                    <div class="card bg-dark mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">Tagged HCPs</h5>
+                        </div>
+                        <div class="card-body">
+                            {% if hcps %}
+                            <div class="table-responsive">
+                                <table class="table table-dark table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>HCP ID</th>
+                                            <th>Name</th>
+                                            <th>Specialty</th>
+                                            <th>Prescribing</th>
+                                            <th>Engagement</th>
+                                            <th>Tag</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for hcp in hcps %}
+                                        <tr>
+                                            <td>{{ hcp.hcp_id }}</td>
+                                            <td>{{ hcp.name }}</td>
+                                            <td>{{ hcp.specialty }}</td>
+                                            <td>{{ hcp.prescribing_pattern|round(1) }}</td>
+                                            <td>{{ hcp.engagement_score|round(1) }}</td>
+                                            <td>
+                                                <span class="tag-{{ hcp.tag }}">⬤</span> {{ hcp.tag|replace('-', ' ')|capitalize }}
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            {% else %}
+                            <div class="text-center py-4">
+                                <i class="fas fa-database fa-3x mb-3 text-muted"></i>
+                                <p>No HCP data uploaded yet. Use the form to upload your CSV file.</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    {% if hcps %}
+                    <div class="text-end">
+                        <a href="{{ url_for('contentcraft') }}" class="btn btn-primary">
+                            Next: Generate Content <i class="fas fa-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}

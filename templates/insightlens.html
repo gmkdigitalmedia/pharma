@@ -1,0 +1,224 @@
+{% extends "base.html" %}
+
+{% block title %}InsightLens - Xupra{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+            <div class="list-group list-group-flush mt-4">
+                <a href="{{ url_for('dashboard') }}" class="list-group-item list-group-item-action">
+                    <i class="fas fa-tachometer-alt sidebar-icon"></i>Dashboard
+                </a>
+                <a href="{{ url_for('meditag') }}" class="list-group-item list-group-item-action">
+                    <i class="fas fa-tag sidebar-icon"></i>MediTag Engine
+                </a>
+                <a href="{{ url_for('contentcraft') }}" class="list-group-item list-group-item-action">
+                    <i class="fas fa-file-alt sidebar-icon"></i>ContentCraft AI
+                </a>
+                <a href="{{ url_for('engageoptic') }}" class="list-group-item list-group-item-action">
+                    <i class="fas fa-bullseye sidebar-icon"></i>EngageOptic
+                </a>
+                <a href="{{ url_for('insightlens') }}" class="list-group-item list-group-item-action active">
+                    <i class="fas fa-chart-line sidebar-icon"></i>InsightLens
+                </a>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2"><i class="fas fa-chart-line me-2"></i>InsightLens</h1>
+                <!-- Progress Indicator -->
+                <div class="progress" style="width: 200px;">
+                    <div class="progress-bar bg-success" style="width: {{ get_progress_percentage() }}%">{{ get_progress_percentage() }}%</div>
+                </div>
+            </div>
+            
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            <div id="analytics-container" data-analytics="{{ analytics_data }}">
+                {% if campaigns %}
+                <div class="row">
+                    <!-- Engagement Rates Chart -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card bg-dark h-100">
+                            <div class="card-header">
+                                <h5 class="mb-0">Engagement Rates</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-container">
+                                    <canvas id="engagement-chart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Channel Distribution Chart -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card bg-dark h-100">
+                            <div class="card-header">
+                                <h5 class="mb-0">Channel Distribution</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-container">
+                                    <canvas id="channel-chart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Compliance Status Chart -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card bg-dark h-100">
+                            <div class="card-header">
+                                <h5 class="mb-0">Compliance Status</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-container">
+                                    <canvas id="compliance-chart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Flags Resolved Chart -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card bg-dark h-100">
+                            <div class="card-header">
+                                <h5 class="mb-0">Compliance Flags Resolved</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-container">
+                                    <canvas id="flags-chart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Campaign Analytics Table -->
+                <div class="card bg-dark mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Campaign Analytics</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-dark table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Campaign ID</th>
+                                        <th>HCP</th>
+                                        <th>Channel</th>
+                                        <th>Open Rate</th>
+                                        <th>Response Rate</th>
+                                        <th>Compliance</th>
+                                        <th>Flags Resolved</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for campaign in campaigns %}
+                                    <tr>
+                                        <td>{{ campaign.id }}</td>
+                                        <td>{{ campaign.content.hcp.name }}</td>
+                                        <td>
+                                            {% if campaign.channel == 'email' %}
+                                            <i class="fas fa-envelope me-2 text-success"></i>
+                                            {% elif campaign.channel == 'webinar' %}
+                                            <i class="fas fa-video me-2 text-info"></i>
+                                            {% elif campaign.channel == 'in-person' %}
+                                            <i class="fas fa-user-md me-2 text-warning"></i>
+                                            {% endif %}
+                                            {{ campaign.channel|capitalize }}
+                                        </td>
+                                        {% if campaign.analytics %}
+                                        <td>{{ (campaign.analytics[0].open_rate * 100)|round(1) }}%</td>
+                                        <td>{{ (campaign.analytics[0].response_rate * 100)|round(1) }}%</td>
+                                        <td>
+                                            {% if campaign.analytics[0].compliance_status == 'Compliant' %}
+                                            <span class="badge bg-success">Compliant</span>
+                                            {% elif campaign.analytics[0].compliance_status == 'Non-Compliant' %}
+                                            <span class="badge bg-danger">Non-Compliant</span>
+                                            {% else %}
+                                            <span class="badge bg-secondary">Pending</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ campaign.analytics[0].flags_resolved }}</td>
+                                        {% else %}
+                                        <td colspan="4" class="text-center">No analytics available</td>
+                                        {% endif %}
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card bg-dark mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Key Insights</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <div class="card bg-dark">
+                                    <div class="card-body text-center">
+                                        <h6>Best Performing Channel</h6>
+                                        <i class="fas fa-video fa-3x mb-3 text-info"></i>
+                                        <p class="h4">Webinars</p>
+                                        <p class="text-muted">For evidence-driven HCPs</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="card bg-dark">
+                                    <div class="card-body text-center">
+                                        <h6>Highest Response Rate</h6>
+                                        <i class="fas fa-chart-line fa-3x mb-3 text-success"></i>
+                                        <p class="h4">32.5%</p>
+                                        <p class="text-muted">Early adopter segment</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="card bg-dark">
+                                    <div class="card-body text-center">
+                                        <h6>Compliance Rate</h6>
+                                        <i class="fas fa-shield-alt fa-3x mb-3 text-warning"></i>
+                                        <p class="h4">85%</p>
+                                        <p class="text-muted">Campaigns fully compliant</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-chart-line fa-4x mb-3 text-muted"></i>
+                    <h3>No Analytics Data Available</h3>
+                    <p class="lead">Please create campaigns in the EngageOptic module first.</p>
+                    <a href="{{ url_for('engageoptic') }}" class="btn btn-primary mt-3">
+                        <i class="fas fa-bullseye me-2"></i> Go to EngageOptic
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}
