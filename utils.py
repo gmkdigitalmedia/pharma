@@ -181,7 +181,7 @@ def generate_content(hcp_tag, hcp_name, content_blocks=None, specialty=None, use
     )
     
     content += "\n\nWe would be pleased to discuss how this might benefit your patients. Please let me know if you would like to schedule a meeting or webinar.\n\n"
-    content += "Best regards,\nYour Vivvo.ai Representative"
+    content += "Best regards,\nYour Xupra Representative"
     
     # Basic flagging for template-based content
     flags = mlr_prescreen(content)

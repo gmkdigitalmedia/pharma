@@ -93,20 +93,51 @@ def register_routes(app):
     @app.route('/login', methods=['GET', 'POST'])
     def login():
         if current_user.is_authenticated:
+            app.logger.info(f"Already authenticated user: {current_user.username}")
             return redirect(url_for('dashboard'))
         
+        app.logger.info(f"Login attempt - Method: {request.method}")
         form = LoginForm()
-        if form.validate_on_submit():
-            user = User.query.filter_by(username=form.username.data).first()
+        
+        if request.method == 'POST':
+            app.logger.info(f"Login form data: {request.form}")
+            app.logger.info(f"Form validation: {form.validate()}")
+            app.logger.info(f"Form errors: {form.errors}")
             
-            if user and user.check_password(form.password.data):
-                login_user(user)
-                next_page = request.args.get('next')
-                # Track user progress
-                session['progress'] = ['homepage', 'login']
-                return redirect(next_page or url_for('dashboard'))
+        if form.validate_on_submit():
+            username = form.username.data
+            app.logger.info(f"Login attempt for username: {username}")
+            
+            user = User.query.filter_by(username=username).first()
+            app.logger.info(f"User found: {user is not None}")
+            
+            if user:
+                password_check = user.check_password(form.password.data)
+                app.logger.info(f"Password check result: {password_check}")
+                
+                if password_check:
+                    try:
+                        # Mark the session as permanent so it lasts for the duration specified in config
+                        session.permanent = True
+                        login_user(user, remember=True)
+                        app.logger.info(f"User logged in successfully: {user.username}")
+                        
+                        next_page = request.args.get('next')
+                        # Track user progress
+                        session['progress'] = ['homepage', 'login']
+                        session.modified = True
+                        return redirect(next_page or url_for('dashboard'))
+                    except Exception as e:
+                        app.logger.error(f"Login error: {str(e)}")
+                        flash(f'Login error: {str(e)}', 'danger')
+                else:
+                    app.logger.warning(f"Failed password check for user: {username}")
+                    flash('Login unsuccessful. Please check username and password', 'danger')
             else:
+                app.logger.warning(f"User not found: {username}")
                 flash('Login unsuccessful. Please check username and password', 'danger')
+        else:
+            app.logger.info("Form validation failed")
                 
         return render_template('login.html', form=form)
 
@@ -171,30 +202,41 @@ def register_routes(app):
             
         form = OrganizationRegistrationForm()
         
+        app.logger.info(f"Method: {request.method}")
+        if request.method == 'POST':
+            app.logger.info(f"Form data: {request.form}")
+            app.logger.info(f"Form errors: {form.errors}")
+            app.logger.info(f"Form validation: {form.validate()}")
+            
         if form.validate_on_submit():
-            # Create the organization
-            organization = Organization(name=form.name.data)
-            db.session.add(organization)
-            db.session.flush()  # Flush to get the organization ID
-            
-            # Create the admin user
-            user = User(
-                username=form.username.data,
-                email=form.email.data,
-                role='admin',
-                organization_id=organization.id
-            )
-            user.set_password(form.password.data)
-            
-            db.session.add(user)
-            db.session.commit()
-            
-            flash('Organization registered successfully! You can now log in as the admin.', 'success')
-            return redirect(url_for('login'))
+            try:
+                # Create the organization
+                organization = Organization(name=form.name.data)
+                db.session.add(organization)
+                db.session.flush()  # Flush to get the organization ID
+                
+                # Create the admin user
+                user = User(
+                    username=form.username.data,
+                    email=form.email.data,
+                    role='admin',
+                    organization_id=organization.id
+                )
+                user.set_password(form.password.data)
+                
+                db.session.add(user)
+                db.session.commit()
+                
+                flash('Organization registered successfully! You can now log in as the admin.', 'success')
+                return redirect(url_for('login'))
+            except Exception as e:
+                db.session.rollback()
+                app.logger.error(f"Error creating organization and admin: {str(e)}")
+                flash(f'Error registering organization: {str(e)}', 'danger')
             
         return render_template('auth/register_organization.html', form=form)
 
-    @app.route('/logout')
+    @app.route('/logout', methods=['GET', 'POST'])
     def logout():
         logout_user()
         # Clear session
@@ -706,7 +748,7 @@ def register_routes(app):
             # Send invitation email
             invite_url = url_for('accept_invitation', token=token, _external=True)
             organization = Organization.query.get(current_user.organization_id)
-            org_name = organization.name if organization else "Vivvo.ai"
+            org_name = organization.name if organization else "Xupra"
             
             from email_service import send_invitation_email
             email_sent = send_invitation_email(
@@ -747,7 +789,7 @@ def register_routes(app):
         # Send invitation email
         invite_url = url_for('accept_invitation', token=invitation.token, _external=True)
         organization = Organization.query.get(current_user.organization_id)
-        org_name = organization.name if organization else "Vivvo.ai"
+        org_name = organization.name if organization else "Xupra"
         
         from email_service import send_invitation_email
         email_sent = send_invitation_email(
@@ -967,7 +1009,7 @@ def register_routes(app):
             # Send invitation email
             invite_url = url_for('accept_invitation', token=token, _external=True)
             organization = Organization.query.get(current_user.organization_id)
-            org_name = organization.name if organization else "Vivvo.ai"
+            org_name = organization.name if organization else "Xupra"
             
             from email_service import send_invitation_email
             email_sent = send_invitation_email(
@@ -1017,7 +1059,7 @@ def register_routes(app):
         # Send invitation email
         invite_url = url_for('accept_invitation', token=invitation.token, _external=True)
         organization = Organization.query.get(current_user.organization_id)
-        org_name = organization.name if organization else "Vivvo.ai"
+        org_name = organization.name if organization else "Xupra"
         
         from email_service import send_invitation_email
         email_sent = send_invitation_email(
