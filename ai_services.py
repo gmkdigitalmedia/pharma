@@ -1,7 +1,7 @@
 """
-AI Service Integrations for Vivvo.ai
+AI Service Integrations for Xupra
 
-This module provides AI capabilities to Vivvo.ai through:
+This module provides AI capabilities to Xupra through:
 - OpenAI API for content generation and NLP tasks
 - Anthropic API as a fallback for content generation
 - ML-based HCP classification
@@ -55,7 +55,7 @@ def generate_personalized_content(hcp_data: Dict[str, Any], content_type: str = 
     """
     # Construct prompt with HCP data and content requirements
     prompt = f"""
-You are an AI assistant for Vivvo.ai, a pharmaceutical engagement company. Create personalized content for Dr. {hcp_data['name']}, 
+You are an AI assistant for Xupra, a pharmaceutical engagement company. Create personalized content for Dr. {hcp_data['name']}, 
 a {hcp_data['specialty']} who has been categorized as a '{hcp_data['tag']}' type HCP.
 
 Additional information:
@@ -69,7 +69,7 @@ Create appropriate content that:
 3. Follows pharmaceutical compliance guidelines (no off-label promotion)
 4. Includes relevant scientific information
 5. Has a clear call to action
-6. Signs off as "Your Vivvo.ai Representative" 
+6. Signs off as "Your Xupra Representative" 
 
 Keep the content concise, professional, and compliant with pharmaceutical marketing regulations.
 """
@@ -115,7 +115,7 @@ Keep the content concise, professional, and compliant with pharmaceutical market
     # If both APIs fail, use a template-based fallback
     if not content:
         logging.warning("All AI content generation failed, using template fallback")
-        content = f"Dear Dr. {hcp_data['name']},\n\nAs a respected {hcp_data['specialty']}, we thought you might be interested in our latest research...\n\n[Template fallback content for {hcp_data['tag']} HCPs]\n\nBest regards,\nVivvo.ai Team"
+        content = f"Dear Dr. {hcp_data['name']},\n\nAs a respected {hcp_data['specialty']}, we thought you might be interested in our latest research...\n\n[Template fallback content for {hcp_data['tag']} HCPs]\n\nBest regards,\nXupra Team"
         model_used = "Template fallback"
     
     # Run content through compliance screening

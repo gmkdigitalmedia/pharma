@@ -1,5 +1,5 @@
 """
-Email Service for Vivvo.ai
+Email Service for Xupra
 
 This module provides email functionality using SendGrid.
 """
@@ -30,10 +30,10 @@ def send_invitation_email(to_email, invitation_link, role, organization_name):
         logger.warning("SENDGRID_API_KEY environment variable not set. Email not sent.")
         return False
     
-    from_email = os.environ.get('SYSTEM_EMAIL', 'noreply@vivvo.ai')
+    from_email = os.environ.get('SYSTEM_EMAIL', 'noreply@xupra.com')
     
     # Create email subject and content
-    subject = f"Invitation to join {organization_name} on Vivvo.ai"
+    subject = f"Invitation to join {organization_name} on Xupra"
     
     # Create HTML content for better email appearance
     html_content = f"""
@@ -52,11 +52,11 @@ def send_invitation_email(to_email, invitation_link, role, organization_name):
     <body>
         <div class="container">
             <div class="header">
-                <h1>Welcome to Vivvo.ai</h1>
+                <h1>Welcome to Xupra</h1>
             </div>
             <div class="content">
                 <p>Hello,</p>
-                <p>You have been invited to join <strong>{organization_name}</strong> as a <strong>{role}</strong> on Vivvo.ai - 
+                <p>You have been invited to join <strong>{organization_name}</strong> as a <strong>{role}</strong> on Xupra - 
                 the AI-powered HCP engagement platform.</p>
                 <p>To accept this invitation and create your account, please click the link below:</p>
                 <p style="text-align: center;">
@@ -64,11 +64,11 @@ def send_invitation_email(to_email, invitation_link, role, organization_name):
                 </p>
                 <p>This invitation link will expire in 7 days.</p>
                 <p>If you have any questions, please contact your organization administrator.</p>
-                <p>Best regards,<br>The Vivvo.ai Team</p>
+                <p>Best regards,<br>The Xupra Team</p>
             </div>
             <div class="footer">
                 <p>This is an automated message, please do not reply to this email.</p>
-                <p>&copy; {2025} Vivvo.ai. All rights reserved.</p>
+                <p>&copy; {2025} Xupra. All rights reserved.</p>
             </div>
         </div>
     </body>
@@ -77,11 +77,11 @@ def send_invitation_email(to_email, invitation_link, role, organization_name):
     
     # Create plain text content as fallback
     text_content = f"""
-    Welcome to Vivvo.ai
+    Welcome to Xupra
 
     Hello,
 
-    You have been invited to join {organization_name} as a {role} on Vivvo.ai - the AI-powered HCP engagement platform.
+    You have been invited to join {organization_name} as a {role} on Xupra - the AI-powered HCP engagement platform.
 
     To accept this invitation and create your account, please visit this link:
     {invitation_link}
@@ -91,7 +91,7 @@ def send_invitation_email(to_email, invitation_link, role, organization_name):
     If you have any questions, please contact your organization administrator.
 
     Best regards,
-    The Vivvo.ai Team
+    The Xupra Team
     """
     
     message = Mail(
@@ -128,10 +128,10 @@ def send_password_reset_email(to_email, reset_link):
         logger.warning("SENDGRID_API_KEY environment variable not set. Email not sent.")
         return False
     
-    from_email = os.environ.get('SYSTEM_EMAIL', 'noreply@vivvo.ai')
+    from_email = os.environ.get('SYSTEM_EMAIL', 'noreply@xupra.com')
     
     # Create email subject and content
-    subject = "Reset Your Vivvo.ai Password"
+    subject = "Reset Your Xupra Password"
     
     # Create HTML content
     html_content = f"""
@@ -154,18 +154,18 @@ def send_password_reset_email(to_email, reset_link):
             </div>
             <div class="content">
                 <p>Hello,</p>
-                <p>We received a request to reset your password for your Vivvo.ai account.</p>
+                <p>We received a request to reset your password for your Xupra account.</p>
                 <p>To reset your password, please click the link below:</p>
                 <p style="text-align: center;">
                     <a href="{reset_link}" class="button">Reset Password</a>
                 </p>
                 <p>This link will expire in 1 hour.</p>
                 <p>If you did not request a password reset, you can safely ignore this email.</p>
-                <p>Best regards,<br>The Vivvo.ai Team</p>
+                <p>Best regards,<br>The Xupra Team</p>
             </div>
             <div class="footer">
                 <p>This is an automated message, please do not reply to this email.</p>
-                <p>&copy; {2025} Vivvo.ai. All rights reserved.</p>
+                <p>&copy; {2025} Xupra. All rights reserved.</p>
             </div>
         </div>
     </body>
@@ -174,11 +174,11 @@ def send_password_reset_email(to_email, reset_link):
     
     # Create plain text content as fallback
     text_content = f"""
-    Reset Your Vivvo.ai Password
+    Reset Your Xupra Password
 
     Hello,
 
-    We received a request to reset your password for your Vivvo.ai account.
+    We received a request to reset your password for your Xupra account.
 
     To reset your password, please visit this link:
     {reset_link}
@@ -188,7 +188,7 @@ def send_password_reset_email(to_email, reset_link):
     If you did not request a password reset, you can safely ignore this email.
 
     Best regards,
-    The Vivvo.ai Team
+    The Xupra Team
     """
     
     message = Mail(
