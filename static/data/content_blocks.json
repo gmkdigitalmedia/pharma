@@ -1,0 +1,22 @@
+{
+    "early-adopter": [
+        "Our latest innovation in {therapy_area} is now available for early clinical adoption.",
+        "As a pioneer in {therapy_area}, you might be interested in our newest treatment approach.",
+        "Leading physicians like yourself are already seeing benefits with our innovative therapy."
+    ],
+    "evidence-driven": [
+        "Recent clinical trials show a {percent}% improvement in patient outcomes using our approach.",
+        "Evidence from our Phase III study demonstrates statistically significant benefits (p<0.001).",
+        "Data from {sample_size} patients indicates robust efficacy with minimal adverse events."
+    ],
+    "patient-focused": [
+        "Patients report improved quality of life scores in recent satisfaction surveys.",
+        "Our treatment regimen is designed with patient convenience and compliance in mind.",
+        "Patient testimonials highlight the positive impact on daily living activities."
+    ],
+    "balanced": [
+        "Our balanced approach combines clinical efficacy with patient-friendly administration.",
+        "Both clinical data and patient experience reports support the value of our therapy.",
+        "The dual benefits of improved outcomes and patient satisfaction make this a compelling option."
+    ]
+}

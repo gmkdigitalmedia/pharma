@@ -1,0 +1,325 @@
+/* Custom CSS for Xupra */
+
+/* General styling */
+body {
+    padding-top: 60px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: #0a1c2e; /* Darker blue background */
+}
+
+.main-content {
+    flex: 1;
+    padding: 20px 0;
+}
+
+/* Homepage styling */
+.hero-section {
+    position: relative;
+    text-align: center;
+    padding: 100px 0 80px;
+    background: linear-gradient(135deg, #0d253f, #0f2942, #102a45);
+    margin-bottom: 50px;
+    overflow: hidden;
+    height: 500px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hero-banner {
+    position: relative;
+    z-index: 10;
+    max-width: 850px;
+    margin: 0 auto;
+    background: rgba(13, 37, 63, 0.7);
+    border: 1px solid rgba(33, 150, 243, 0.3);
+    border-radius: 8px;
+    padding: 40px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+    animation: glow 5s infinite alternate;
+}
+
+.hero-shimmer {
+    position: absolute;
+    top: 0;
+    left: -150%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(33, 150, 243, 0.1) 50%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    transform: skewX(-20deg);
+    animation: shimmer 1.5s ease-in-out forwards;
+}
+
+@keyframes shimmer {
+    100% {
+        left: 150%;
+    }
+}
+
+@keyframes glow {
+    0% {
+        box-shadow: 0 0 20px rgba(33, 150, 243, 0.3);
+    }
+    50% {
+        box-shadow: 0 0 30px rgba(33, 150, 243, 0.5);
+    }
+    100% {
+        box-shadow: 0 0 20px rgba(33, 150, 243, 0.3);
+    }
+}
+
+.homepage-hero {
+    text-align: center;
+    padding: 50px 0;
+    background-color: #0f2942; /* Dark blue background */
+    margin-bottom: 30px;
+}
+
+.hero-title {
+    font-size: 3.5rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    text-shadow: 0 0 15px rgba(33, 150, 243, 0.8);
+    background: linear-gradient(90deg, #64b5f6, #2196f3, #1976d2);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent !important;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon-container {
+    display: inline-block;
+    font-size: 0.9em;
+    color: #90caf9;
+    text-shadow: 0 0 10px rgba(33, 150, 243, 0.7);
+    background: none;
+    -webkit-background-clip: initial;
+    background-clip: initial;
+}
+
+.hero-subtitle {
+    font-size: 1.5rem;
+    margin-bottom: 30px;
+    color: #e3f2fd;
+    letter-spacing: 0.5px;
+}
+
+.hero-button {
+    padding: 12px 30px;
+    font-size: 1.1rem;
+    letter-spacing: 0.5px;
+    background: linear-gradient(90deg, #1976d2, #2196f3);
+    border: none;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+    transition: all 0.3s ease !important;
+}
+
+.hero-button:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: all 0.6s ease;
+    z-index: -1;
+}
+
+.hero-button:hover:before {
+    left: 100%;
+}
+
+.hero-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Floating particles animation */
+.particle {
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background-color: rgba(33, 150, 243, 0.2);
+    pointer-events: none;
+}
+
+/* Wave animation */
+#wave-animation {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 100px;
+    z-index: 2;
+    overflow: hidden;
+}
+
+@keyframes wave {
+    0% {
+        transform: translateX(-25%) scaleY(1);
+    }
+    50% {
+        transform: translateX(0%) scaleY(0.8);
+    }
+    100% {
+        transform: translateX(25%) scaleY(1);
+    }
+}
+
+.feature-card {
+    height: 100%;
+    transition: transform 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+}
+
+/* Dashboard styling */
+.sidebar {
+    min-height: calc(100vh - 56px);
+    padding-top: 20px;
+    background-color: #0f2942; /* Dark blue sidebar */
+}
+
+.sidebar .nav-link {
+    color: var(--bs-light);
+    padding: 15px;
+    border-radius: 0;
+}
+
+.sidebar .nav-link.active {
+    background-color: #1e88e5; /* Bright blue for active items */
+}
+
+.sidebar .nav-link:hover {
+    background-color: #1565c0; /* Medium blue for hover */
+}
+
+.sidebar-icon {
+    margin-right: 10px;
+}
+
+/* Module headers */
+.module-header {
+    margin-bottom: 30px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--bs-gray-600);
+}
+
+/* Progress bar */
+.workflow-progress {
+    margin-bottom: 20px;
+}
+
+/* Card styling */
+.module-card {
+    margin-bottom: 20px;
+}
+
+.card {
+    background-color: #0f2942 !important; /* Dark blue for cards */
+    border-color: #1976d2 !important; /* Medium blue border */
+}
+
+.card-header {
+    background-color: #1565c0 !important; /* Medium blue header */
+    border-color: #1976d2 !important;
+}
+
+/* Table styling */
+.table-dark {
+    --bs-table-bg: #0d253f; /* Darker blue for tables */
+}
+
+/* Form styling */
+.form-control, .form-select {
+    background-color: #0d253f; /* Darker blue for form controls */
+    border-color: #1976d2; /* Medium blue border */
+    color: var(--bs-light);
+}
+
+.form-control:focus, .form-select:focus {
+    background-color: #0d253f; /* Darker blue for form controls */
+    border-color: #2196f3; /* Bright blue focus border */
+    color: var(--bs-light);
+}
+
+/* HCP tag colors */
+.tag-early-adopter {
+    color: var(--bs-danger);
+}
+
+.tag-evidence-driven {
+    color: var(--bs-info);
+}
+
+.tag-patient-focused {
+    color: var(--bs-success);
+}
+
+.tag-balanced {
+    color: var(--bs-warning);
+}
+
+/* Content preview */
+.content-preview {
+    background-color: #0d253f; /* Darker blue for content preview */
+    padding: 15px;
+    border-radius: 5px;
+    white-space: pre-line;
+    border: 1px solid #1976d2; /* Medium blue border */
+}
+
+.flagged-word {
+    color: var(--bs-danger);
+    text-decoration: underline;
+    cursor: help;
+}
+
+/* Campaign plan styles */
+.channel-icon {
+    font-size: 1.5rem;
+    margin-right: 10px;
+}
+
+/* Analytics visualization */
+.chart-container {
+    height: 300px;
+    margin-bottom: 30px;
+}
+
+/* About page styling */
+.rounded-circle {
+    width: 150px;
+    height: 150px;
+    overflow: hidden;
+}
+
+.about-section {
+    background-color: #0f2942;
+    border-radius: 8px;
+    border: 1px solid #1976d2;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.skills-list i {
+    color: #2196f3;
+    margin-right: 10px;
+}
